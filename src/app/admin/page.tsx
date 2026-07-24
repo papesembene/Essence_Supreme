@@ -355,9 +355,9 @@ export default function AdminPage() {
 
   // --- DASHBOARD VIEW ---
   return (
-    <div className="container mx-auto px-6 py-20 min-h-[70vh]">
-      <div className="flex justify-between items-center mb-12 border-b border-white/5 pb-8">
-        <h1 className="font-serif text-3xl tracking-widest">DASHBOARD</h1>
+    <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16 min-h-screen">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-10 border-b border-white/5 pb-8">
+        <h1 className="font-serif text-2xl sm:text-3xl tracking-widest">DASHBOARD</h1>
         <button onClick={() => supabase?.auth.signOut()} className="text-xs font-light text-muted hover:text-accent uppercase tracking-widest transition-colors">Déconnexion</button>
       </div>
 
@@ -376,12 +376,12 @@ export default function AdminPage() {
       </form>
       
       {isAddingMode ? (
-        <div className="bg-[#0A0A0E] p-8 border border-white/5 max-w-2xl mx-auto">
+        <div className="bg-[#0A0A0E] p-5 sm:p-8 border border-white/5 max-w-2xl mx-auto">
           <h2 className="font-serif text-2xl tracking-wide mb-8 text-accent">
             {editingProductId ? "Modifier Produit" : "Nouveau Produit"}
           </h2>
           <form onSubmit={handleSaveProduct} className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs uppercase tracking-widest text-muted mb-2">Nom du produit</label>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none" required />
@@ -397,7 +397,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs uppercase tracking-widest text-muted mb-2">Prix actuel (FCFA)</label>
                 <input type="number" step="1" value={price} onChange={e => setPrice(e.target.value)} className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none" required />
@@ -408,7 +408,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs uppercase tracking-widest text-muted mb-2">Stock disponible</label>
                 <input type="number" value={stock} onChange={e => setStock(e.target.value)} className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none" required />
@@ -425,7 +425,7 @@ export default function AdminPage() {
               <input type="file" accept="image/*" onChange={e => setImageFile(e.target.files?.[0] || null)} className="w-full text-sm text-muted file:bg-accent file:text-primary file:border-0 file:px-4 file:py-2 file:mr-4 file:hover:bg-white file:transition-colors file:cursor-pointer" />
             </div>
             
-            <div className="flex space-x-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button type="submit" disabled={actionLoading} className="flex-1 bg-accent text-primary px-4 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors disabled:opacity-50 flex justify-center items-center">
                 {actionLoading ? <Loader2 className="animate-spin" size={20} /> : editingProductId ? "Enregistrer les modifications" : "Ajouter le produit"}
               </button>
@@ -437,7 +437,7 @@ export default function AdminPage() {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
             <h2 className="font-serif text-2xl tracking-wide text-white">Catalogue en direct</h2>
             <button onClick={openAddForm} className="flex items-center space-x-2 bg-accent text-primary px-6 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors text-sm">
               <Plus size={18} />

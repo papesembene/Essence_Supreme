@@ -30,15 +30,12 @@ export function Footer() {
               <h4 className="font-serif tracking-wider mb-6">CONTACT</h4>
               <ul className="space-y-4 text-muted font-light text-sm">
                 <li className="flex items-center space-x-3 md:justify-end">
-                  <span className="order-2 md:order-1">Paris, France</span>
+                  <span className="order-2 md:order-1">Dakar, Sénégal</span>
                   <MapPin size={16} strokeWidth={1} className="text-accent order-1 md:order-2 md:ml-3" />
                 </li>
                 <li className="flex items-center space-x-3 md:justify-end">
-                  <a href="mailto:contact@essencesupreme.com" className="order-2 md:order-1 hover:text-accent transition-colors">contact@essencesupreme.com</a>
+                  <a href="mailto:contact@essence-supreme.store" className="order-2 md:order-1 hover:text-accent transition-colors">contact@essence-supreme.store</a>
                   <Mail size={16} strokeWidth={1} className="text-accent order-1 md:order-2 md:ml-3" />
-                </li>
-                <li className="flex items-center space-x-3 md:justify-end">
-                  <a href="https://instagram.com" className="order-2 md:order-1 hover:text-accent transition-colors">@essencesupreme</a>
                 </li>
               </ul>
             </div>

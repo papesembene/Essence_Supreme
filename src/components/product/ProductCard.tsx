@@ -35,14 +35,14 @@ export function ProductCard({ product }: ProductCardProps) {
         />
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </Link>
-      <div className="flex justify-between items-start mt-auto gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mt-auto">
+        <div className="min-w-0">
           <h3 className="font-serif text-lg tracking-wide mb-1 group-hover:text-accent transition-colors">
             <Link href={`/products/${product.id}`}>{product.name}</Link>
           </h3>
           <p className="text-muted text-sm font-light capitalize">{product.category}</p>
         </div>
-        <div className="text-right whitespace-nowrap ml-4">
+        <div className="text-left sm:text-right sm:whitespace-nowrap">
           {discount && (
             <div className="mb-1 flex items-center justify-end gap-2">
               <span className="text-xs text-muted line-through">

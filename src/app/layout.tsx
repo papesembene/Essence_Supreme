@@ -5,6 +5,9 @@ import { AppShell } from "@/components/layout/AppShell";
 export const metadata: Metadata = {
   title: "Essence Suprême | L'essence du luxe, dans chaque goutte",
   description: "Boutique en ligne premium de parfums, huiles parfumées, brumes et déodorants.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

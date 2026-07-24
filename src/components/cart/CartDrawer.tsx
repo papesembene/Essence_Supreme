@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
@@ -10,11 +11,25 @@ import { createClient } from "@/lib/supabase";
 
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState("");
   const { items, count, removeItem, updateQuantity, clearCart } = useCart();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   const groups = useMemo(() => {
     const grouped = new Map<
@@ -98,16 +113,16 @@ export function CartDrawer() {
         )}
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[80]">
+      {mounted && open && createPortal(
+        <div className="fixed inset-0 z-[9999]">
           <button
             type="button"
             aria-label="Fermer le panier"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
           />
-          <aside className="absolute right-0 top-0 h-full w-full max-w-md bg-primary border-l border-white/10 shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
+          <aside className="absolute right-0 top-0 h-dvh w-full max-w-md bg-primary border-l border-white/10 shadow-2xl flex flex-col">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/10 px-5 sm:px-6 py-5">
               <h2 className="font-serif text-2xl tracking-widest">PANIER</h2>
               <button
                 type="button"
@@ -125,7 +140,7 @@ export function CartDrawer() {
               </div>
             ) : (
               <>
-                <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+                <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-6 space-y-6">
                   {items.map(({ product, quantity }) => (
                     <div key={product.id} className="flex gap-4">
                       <div className="relative h-24 w-20 flex-shrink-0 bg-[#0A0A0E] border border-white/5">
@@ -182,7 +197,7 @@ export function CartDrawer() {
                   ))}
                 </div>
 
-                <div className="border-t border-white/10 p-6 space-y-4">
+                <div className="flex-shrink-0 border-t border-white/10 p-5 sm:p-6 space-y-4 bg-primary">
                   <div className="grid grid-cols-1 gap-3">
                     <input
                       type="text"
@@ -239,7 +254,8 @@ export function CartDrawer() {
               </>
             )}
           </aside>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

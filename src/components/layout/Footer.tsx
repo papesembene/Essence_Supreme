@@ -21,6 +21,7 @@ export function Footer() {
                 <li><Link href="/products?category=huile" className="hover:text-accent transition-colors">Huiles Précieuses</Link></li>
                 <li><Link href="/products?category=deodorant" className="hover:text-accent transition-colors">Déodorants</Link></li>
                 <li><Link href="/products?category=brume" className="hover:text-accent transition-colors">Brumes</Link></li>
+                <li><Link href="/about" className="hover:text-accent transition-colors">À propos</Link></li>
               </ul>
             </div>
           </div>

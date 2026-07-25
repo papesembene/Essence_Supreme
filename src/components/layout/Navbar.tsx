@@ -37,6 +37,7 @@ export function Navbar() {
             <Link href="/products?category=huile" className="hover:text-accent transition-colors duration-300">HUILES</Link>
             <Link href="/products?category=deodorant" className="hover:text-accent transition-colors duration-300">DÉODORANTS</Link>
             <Link href="/products?category=brume" className="hover:text-accent transition-colors duration-300">BRUMES</Link>
+            <Link href="/about" className="hover:text-accent transition-colors duration-300">À PROPOS</Link>
           </nav>
 
           <div className="hidden lg:flex items-center z-50">
@@ -67,6 +68,7 @@ export function Navbar() {
               <Link href="/products?category=huile" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">HUILES</Link>
               <Link href="/products?category=deodorant" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">DÉODORANTS</Link>
               <Link href="/products?category=brume" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">BRUMES</Link>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">À PROPOS</Link>
             </nav>
           </motion.div>
         )}

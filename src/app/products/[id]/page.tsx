@@ -17,7 +17,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   
   let product: Product | undefined = mockProducts.find((p: Product) => p.id === id);
   const supabase = createServerSupabase();
-  if (supabase && id.length > 20) { // Check real UUID
+  if (supabase && id.length > 20 && !id.startsWith("starter-")) {
     const { data } = await supabase.from('products').select('*').eq('id', id).single();
     if (data) product = data as Product;
   }

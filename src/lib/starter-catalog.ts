@@ -1,4 +1,4 @@
-import { Category } from "@/lib/mock";
+import type { Category } from "@/lib/mock";
 
 export interface StarterCatalogProduct {
   name: string;

@@ -2,8 +2,9 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { Trash2, Plus, Loader2 } from "lucide-react";
+import { Trash2, Plus, Loader2, PackagePlus } from "lucide-react";
 import { discountPercent, formatPrice } from "@/lib/pricing";
+import { starterCatalog } from "@/lib/starter-catalog";
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState("");
 
@@ -260,6 +262,40 @@ export default function AdminPage() {
     setActionLoading(false);
   };
 
+  const handleImportStarterCatalog = async () => {
+    if (!supabase) return;
+    if (!adminWhatsapp) return alert("Enregistrez d'abord le WhatsApp de cet admin.");
+    if (!confirm(`Importer ${starterCatalog.length} produits de départ dans votre catalogue ?`)) return;
+
+    setImportLoading(true);
+    try {
+      const existingNames = new Set(products.map((product) => product.name));
+      const productsToImport = starterCatalog
+        .filter((product) => !existingNames.has(product.name))
+        .map((product) => ({
+          ...product,
+          admin_id: session.user.id,
+          seller_name: adminName || session.user.email || "Vendeur",
+          seller_whatsapp: adminWhatsapp.replace(/[^\d]/g, ""),
+        }));
+
+      if (productsToImport.length === 0) {
+        alert("Tous les produits du catalogue de départ existent déjà.");
+        return;
+      }
+
+      const { error } = await supabase.from("products").insert(productsToImport);
+      if (error) throw error;
+
+      alert(`${productsToImport.length} produits importés avec succès.`);
+      fetchProducts(session.user.id);
+    } catch (err: any) {
+      alert("Erreur import catalogue: " + err.message);
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   const handleUpdateOrderStatus = async (id: string, status: string) => {
     if (!supabase) return;
     const { error } = await supabase
@@ -439,10 +475,16 @@ export default function AdminPage() {
         <>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
             <h2 className="font-serif text-2xl tracking-wide text-white">Catalogue en direct</h2>
-            <button onClick={openAddForm} className="flex items-center space-x-2 bg-accent text-primary px-6 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors text-sm">
-              <Plus size={18} />
-              <span>Nouveau</span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={handleImportStarterCatalog} disabled={importLoading} className="flex items-center justify-center space-x-2 border border-white/10 text-muted px-5 py-3 uppercase tracking-widest font-semibold hover:border-accent hover:text-accent transition-colors text-sm disabled:opacity-50">
+                {importLoading ? <Loader2 className="animate-spin" size={18} /> : <PackagePlus size={18} />}
+                <span>Importer catalogue</span>
+              </button>
+              <button onClick={openAddForm} className="flex items-center justify-center space-x-2 bg-accent text-primary px-6 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors text-sm">
+                <Plus size={18} />
+                <span>Nouveau</span>
+              </button>
+            </div>
           </div>
 
           {products.length === 0 ? (

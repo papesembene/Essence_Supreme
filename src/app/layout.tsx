@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     "musc Sénégal",
     "brume parfumée",
     "déodorant parfumé",
-    "M,sem's",
+    "M.sem's",
   ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Essence Supreme",
-    description: "Huiles de parfum, muscs, brumes et déodorants à Dakar, par M,sem's.",
+    description: "Huiles de parfum, muscs, brumes et déodorants à Dakar, par M.sem's.",
     url: "https://www.essence-supreme.store",
     siteName: "Essence Suprême",
     locale: "fr_SN",
@@ -57,7 +57,7 @@ export default function RootLayout({
     email: "contact@essence-supreme.store",
     founder: {
       "@type": "Person",
-      name: "M,sem's",
+      name: "M.sem's",
     },
     address: {
       "@type": "PostalAddress",

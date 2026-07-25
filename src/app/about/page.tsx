@@ -5,7 +5,7 @@ import { Mail, MapPin, Sparkles, Truck } from "lucide-react";
 export const metadata: Metadata = {
   title: "À propos | Essence Supreme Dakar",
   description:
-    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Dakar, Sénégal. Propriétaire: M,sem's.",
+    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Dakar, Sénégal. Propriétaire: M.sem's.",
   alternates: {
     canonical: "/about",
   },
@@ -73,7 +73,7 @@ export default function AboutPage() {
             Propriétaire
           </h2>
           <p className="text-muted font-light leading-relaxed max-w-2xl">
-            Essence Supreme appartient à M,sem&apos;s. Le site
+            Essence Supreme appartient à M.sem&apos;s. Le site
             essence-supreme.store sert à présenter le catalogue, faciliter les
             commandes et mettre en avant les senteurs disponibles au Sénégal.
           </p>

@@ -4,6 +4,9 @@ import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.essence-supreme.store"),
+  verification: {
+    google: "BfBPRNL5DE766mUpw6buTusDNzgrL5uKpsxSKkItZqI",
+  },
   title: "Essence Supreme | Parfums, huiles et muscs à Dakar",
   description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Dakar, Sénégal.",
   keywords: [

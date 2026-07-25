@@ -4,22 +4,29 @@ import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.essence-supreme.store"),
-  title: "Essence Suprême | L'essence du luxe, dans chaque goutte",
-  description: "Boutique en ligne premium de parfums, huiles parfumées, brumes et déodorants.",
+  title: "Essence Supreme | Parfums, huiles et muscs à Dakar",
+  description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Dakar, Sénégal.",
   keywords: [
+    "Essence Supreme",
     "Essence Suprême",
+    "essence supreme store",
+    "essence-supreme.store",
     "parfum Sénégal",
+    "parfum Dakar",
     "huile de parfum Dakar",
+    "huile de parfum Sénégal",
     "musc Dakar",
+    "musc Sénégal",
     "brume parfumée",
     "déodorant parfumé",
+    "M,sem's",
   ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Essence Suprême",
-    description: "Huiles de parfum, muscs, brumes et déodorants à Dakar.",
+    title: "Essence Supreme",
+    description: "Huiles de parfum, muscs, brumes et déodorants à Dakar, par M,sem's.",
     url: "https://www.essence-supreme.store",
     siteName: "Essence Suprême",
     locale: "fr_SN",
@@ -35,9 +42,37 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: "Essence Supreme",
+    alternateName: ["Essence Suprême", "Essence Supreme Store"],
+    url: "https://www.essence-supreme.store",
+    email: "contact@essence-supreme.store",
+    founder: {
+      "@type": "Person",
+      name: "M,sem's",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Dakar",
+      addressCountry: "SN",
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "Sénégal",
+    },
+    description:
+      "Boutique de parfums, huiles de parfum, muscs, brumes et déodorants à Dakar.",
+  };
+
   return (
     <html lang="fr" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-sans bg-primary text-secondary selection:bg-accent selection:text-primary" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <AppShell>{children}</AppShell>
       </body>
     </html>

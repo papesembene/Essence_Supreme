@@ -44,7 +44,7 @@ export function Footer() {
 
         
         <div className="border-t border-white/5 pt-8 text-center text-xs text-muted font-light tracking-wide flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} ESSENCE SUPRÊME. TOUS DROITS RÉSERVÉS.</p>
+          <p>&copy; {new Date().getFullYear()} ESSENCE SUPRÊME. TOUS DROITS RÉSERVÉS. Propriétaire: M,sem's.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="#" className="hover:text-accent transition-colors">Mentions légales</Link>
             <Link href="#" className="hover:text-accent transition-colors">Politique de confidentialité</Link>

@@ -9,7 +9,7 @@ export function Footer() {
           <div className="flex flex-col items-start">
             <h3 className="font-serif text-2xl tracking-widest text-accent mb-6">ESSENCE SUPRÊME</h3>
             <p className="text-muted font-light leading-relaxed max-w-sm">
-              L'essence du luxe, dans chaque goutte. La parfumerie moderne alliant tradition et création olfactive d'exception.
+              L&apos;essence du luxe, dans chaque goutte. La parfumerie moderne alliant tradition et création olfactive d&apos;exception.
             </p>
           </div>
           
@@ -31,7 +31,14 @@ export function Footer() {
               <h4 className="font-serif tracking-wider mb-6">CONTACT</h4>
               <ul className="space-y-4 text-muted font-light text-sm">
                 <li className="flex items-center space-x-3 md:justify-end">
-                  <span className="order-2 md:order-1">Dakar, Sénégal</span>
+                  <a
+                    href="https://fr.wikipedia.org/wiki/Keur_Ndiaye_Lo#/maplink/0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="order-2 md:order-1 hover:text-accent transition-colors"
+                  >
+                    Keur Ndiaye Lo, Sénégal
+                  </a>
                   <MapPin size={16} strokeWidth={1} className="text-accent order-1 md:order-2 md:ml-3" />
                 </li>
                 <li className="flex items-center space-x-3 md:justify-end">
@@ -45,7 +52,7 @@ export function Footer() {
 
         
         <div className="border-t border-white/5 pt-8 text-center text-xs text-muted font-light tracking-wide flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} ESSENCE SUPRÊME. TOUS DROITS RÉSERVÉS. Propriétaire: M.sem's.</p>
+          <p>&copy; {new Date().getFullYear()} ESSENCE SUPRÊME. TOUS DROITS RÉSERVÉS. Propriétaire: M, sem&apos;s.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link href="#" className="hover:text-accent transition-colors">Mentions légales</Link>
             <Link href="#" className="hover:text-accent transition-colors">Politique de confidentialité</Link>

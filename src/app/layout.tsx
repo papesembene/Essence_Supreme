@@ -10,8 +10,8 @@ export const metadata: Metadata = {
       "msvalidate.01": "657AAEB6E2B7EA127066D010D92EDD44",
     },
   },
-  title: "Essence Supreme | Parfums, huiles et muscs à Dakar",
-  description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Dakar, Sénégal.",
+  title: "Essence Supreme | Parfums, huiles et muscs à Keur Ndiaye Lo",
+  description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Keur Ndiaye Lo, Sénégal.",
   keywords: [
     "Essence Supreme",
     "Essence Suprême",
@@ -25,14 +25,15 @@ export const metadata: Metadata = {
     "musc Sénégal",
     "brume parfumée",
     "déodorant parfumé",
-    "M.sem's",
+    "Keur Ndiaye Lo",
+    "M, sem's",
   ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Essence Supreme",
-    description: "Huiles de parfum, muscs, brumes et déodorants à Dakar, par M.sem's.",
+    description: "Huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo, par M, sem's.",
     url: "https://www.essence-supreme.store",
     siteName: "Essence Suprême",
     locale: "fr_SN",
@@ -57,11 +58,11 @@ export default function RootLayout({
     email: "contact@essence-supreme.store",
     founder: {
       "@type": "Person",
-      name: "M.sem's",
+      name: "M, sem's",
     },
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Dakar",
+      addressLocality: "Keur Ndiaye Lo",
       addressCountry: "SN",
     },
     areaServed: {
@@ -69,7 +70,7 @@ export default function RootLayout({
       name: "Sénégal",
     },
     description:
-      "Boutique de parfums, huiles de parfum, muscs, brumes et déodorants à Dakar.",
+      "Boutique de parfums, huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo.",
   };
 
   return (

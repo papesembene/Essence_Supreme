@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Mail, MapPin, Sparkles, Truck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "À propos | Essence Supreme Dakar",
+  title: "À propos | Essence Supreme Keur Ndiaye Lo",
   description:
-    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Dakar, Sénégal. Propriétaire: M.sem's.",
+    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Keur Ndiaye Lo, Sénégal. Propriétaire: M, sem's.",
   alternates: {
     canonical: "/about",
   },
@@ -16,14 +16,14 @@ export default function AboutPage() {
     <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <section className="max-w-4xl">
         <p className="text-accent uppercase tracking-widest text-sm mb-4">
-          Dakar, Sénégal
+          Keur Ndiaye Lo, Sénégal
         </p>
         <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl tracking-widest leading-tight mb-8">
           ESSENCE SUPREME
         </h1>
         <p className="text-muted text-lg sm:text-xl font-light leading-relaxed">
           Essence Supreme, aussi appelée Essence Suprême, est une boutique de
-          parfums basée à Dakar. Nous proposons des huiles de parfum, muscs,
+          parfums basée à Keur Ndiaye Lo. Nous proposons des huiles de parfum, muscs,
           brumes parfumées et déodorants pour celles et ceux qui veulent une
           senteur élégante, accessible et facile à porter au quotidien.
         </p>
@@ -38,7 +38,7 @@ export default function AboutPage() {
           <p className="text-muted font-light leading-relaxed">
             Huiles 3ml, huiles 5ml, extraits 20ml, muscs, brumes et déodorants,
             avec des senteurs appréciées comme Yara Rose, Kayali 81, Khamrah,
-            Musk Rose, Baccarat Rouge, Sauvage Dior et d'autres inspirations.
+            Musk Rose, Baccarat Rouge, Sauvage Dior et d&apos;autres inspirations.
           </p>
         </div>
 
@@ -48,9 +48,9 @@ export default function AboutPage() {
             Notre base
           </h2>
           <p className="text-muted font-light leading-relaxed">
-            La boutique est basée à Dakar, Sénégal. Les commandes sont préparées
-            avec attention et confirmées directement par WhatsApp pour garder un
-            contact simple et rapide avec les clients.
+            La boutique est basée à Keur Ndiaye Lo, Sénégal. Les commandes sont
+            préparées avec attention et confirmées directement par WhatsApp pour
+            garder un contact simple et rapide avec les clients.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function AboutPage() {
             Propriétaire
           </h2>
           <p className="text-muted font-light leading-relaxed max-w-2xl">
-            Essence Supreme appartient à M.sem&apos;s. Le site
+            Essence Supreme appartient à M, sem&apos;s. Le site
             essence-supreme.store sert à présenter le catalogue, faciliter les
             commandes et mettre en avant les senteurs disponibles au Sénégal.
           </p>
@@ -81,7 +81,14 @@ export default function AboutPage() {
         <div className="space-y-4 text-sm text-muted">
           <p className="flex items-center gap-3">
             <MapPin size={18} className="text-accent" />
-            Dakar, Sénégal
+            <a
+              href="https://fr.wikipedia.org/wiki/Keur_Ndiaye_Lo#/maplink/0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
+              Keur Ndiaye Lo, Sénégal
+            </a>
           </p>
           <a
             href="mailto:contact@essence-supreme.store"
@@ -96,7 +103,7 @@ export default function AboutPage() {
       <div className="mt-12">
         <Link
           href="/products"
-          className="inline-flex bg-accent text-primary px-8 py-4 uppercase tracking-widest font-semibold hover:bg-white transition-colors"
+          className="inline-flex bg-accent text-primary px-6 py-3 text-sm uppercase tracking-[0.18em] font-semibold hover:bg-white transition-colors"
         >
           Voir la collection
         </Link>

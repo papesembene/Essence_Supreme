@@ -60,6 +60,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     .filter((p: Product) => !stockFilter || p.stock > 0)
     .filter((p: Product) => !promoFilter || Boolean(p.compare_at_price && p.compare_at_price > p.price))
     .sort((a: Product, b: Product) => {
+      if (sort === "newest") {
+        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime;
+      }
       if (sort === "price-asc") return a.price - b.price;
       if (sort === "price-desc") return b.price - a.price;
       if (sort === "name") return a.name.localeCompare(b.name);

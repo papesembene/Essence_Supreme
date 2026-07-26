@@ -7,6 +7,7 @@ import { discountPercent, formatPrice } from "@/lib/pricing";
 import { starterCatalog } from "@/lib/starter-catalog";
 
 const PRIMARY_ADMIN_EMAIL = "sembenpape4@gmail.com";
+const ADMIN_PRODUCTS_PAGE_SIZE = 12;
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ export default function AdminPage() {
   const [importLoading, setImportLoading] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState("");
+  const [productsPage, setProductsPage] = useState(1);
 
   // Form states
   const [adminName, setAdminName] = useState("");
@@ -52,6 +54,15 @@ export default function AdminPage() {
   ].filter(Boolean);
   const isPrimaryAdmin =
     session?.user?.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
+  const productsTotalPages = Math.max(
+    1,
+    Math.ceil(products.length / ADMIN_PRODUCTS_PAGE_SIZE)
+  );
+  const safeProductsPage = Math.min(productsPage, productsTotalPages);
+  const paginatedProducts = products.slice(
+    (safeProductsPage - 1) * ADMIN_PRODUCTS_PAGE_SIZE,
+    safeProductsPage * ADMIN_PRODUCTS_PAGE_SIZE
+  );
 
   useEffect(() => {
     if (supabase) {
@@ -96,6 +107,7 @@ export default function AdminPage() {
     const { data, error } = await query;
     if (!error && data) {
       setProducts(data);
+      setProductsPage(1);
     }
     setLoading(false);
   };
@@ -540,7 +552,12 @@ export default function AdminPage() {
       ) : (
         <>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
-            <h2 className="font-serif text-2xl tracking-wide text-white">Catalogue en direct</h2>
+            <div>
+              <h2 className="font-serif text-2xl tracking-wide text-white">Catalogue en direct</h2>
+              <p className="mt-2 text-sm text-muted">
+                {products.length} produit{products.length > 1 ? "s" : ""} au total
+              </p>
+            </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handleImportStarterCatalog} disabled={importLoading} className="flex items-center justify-center space-x-2 border border-white/10 text-muted px-5 py-3 uppercase tracking-widest font-semibold hover:border-accent hover:text-accent transition-colors text-sm disabled:opacity-50">
                 {importLoading ? <Loader2 className="animate-spin" size={18} /> : <PackagePlus size={18} />}
@@ -570,7 +587,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((p) => (
+                  {paginatedProducts.map((p) => (
                     <tr key={p.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="py-4 pl-4">
                         <div className="flex items-center space-x-4">
@@ -605,6 +622,31 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
+              {products.length > ADMIN_PRODUCTS_PAGE_SIZE && (
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-muted">
+                    Page {safeProductsPage} / {productsTotalPages}
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setProductsPage((page) => Math.max(1, page - 1))}
+                      disabled={safeProductsPage === 1}
+                      className="border border-white/10 px-4 py-2 text-xs uppercase tracking-widest text-muted transition-colors hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      Précédent
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProductsPage((page) => Math.min(productsTotalPages, page + 1))}
+                      disabled={safeProductsPage === productsTotalPages}
+                      className="border border-white/10 px-4 py-2 text-xs uppercase tracking-widest text-muted transition-colors hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

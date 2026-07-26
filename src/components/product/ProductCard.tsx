@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Product } from "@/lib/mock";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { FavoriteButton } from "@/components/product/FavoriteButton";
 import { discountPercent, formatPrice } from "@/lib/pricing";
 
 interface ProductCardProps {
@@ -25,16 +26,19 @@ export function ProductCard({ product }: ProductCardProps) {
       transition={{ type: "tween", duration: 0.3 }}
       className="group flex flex-col h-full"
     >
-      <Link href={`/products/${product.id}`} className="relative block aspect-[4/5] bg-[#0A0A0E] overflow-hidden mb-6">
-        <Image
-          src={product.image_url}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      </Link>
+      <div className="relative mb-5 aspect-[4/5] overflow-hidden bg-[#0A0A0E]">
+        <Link href={`/products/${product.id}`} className="absolute inset-0">
+          <Image
+            src={product.image_url}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </Link>
+        <FavoriteButton productId={product.id} className="absolute right-3 top-3 z-10" />
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mt-auto">
         <div className="min-w-0">
           <h3 className="font-serif text-lg tracking-wide mb-1 group-hover:text-accent transition-colors">

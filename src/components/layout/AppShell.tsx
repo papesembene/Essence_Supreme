@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PromoBanner } from "@/components/layout/PromoBanner";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -21,7 +22,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <CartProvider>
       <Navbar />
-      <main className="flex-grow flex flex-col pt-24">{children}</main>
+      <main className="flex-grow flex flex-col pt-24">
+        <PromoBanner />
+        {children}
+      </main>
       <Footer />
     </CartProvider>
   );

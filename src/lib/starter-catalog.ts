@@ -95,6 +95,34 @@ const deodorants = [
   },
 ];
 
+const dubaiDeodorants = [
+  {
+    name: "Deo Dubaï - Oud Royal",
+    description: "Un deo Dubaï au style oriental, chaud et élégant, avec une senteur oud propre qui donne une vraie présence au quotidien.",
+    image_url: "/deo/deo-dubai-1.jpeg",
+  },
+  {
+    name: "Deo Dubaï - Amber Fresh",
+    description: "Une fraîcheur ambrée inspirée de Dubaï, agréable après la douche et parfaite pour garder une odeur soignée toute la journée.",
+    image_url: "/deo/deo-dubai-2.jpeg",
+  },
+  {
+    name: "Deo Dubaï - Musk Gold",
+    description: "Un deo parfumé doux et musqué, avec une touche dorée élégante. Idéal pour celles et ceux qui aiment les senteurs propres.",
+    image_url: "/deo/deo-dubai-3.jpeg",
+  },
+  {
+    name: "Deo Dubaï - Intense Night",
+    description: "Une senteur plus intense, raffinée et durable, pensée pour les sorties, les occasions et les amateurs de parfums marqués.",
+    image_url: "/deo/deo-dubai-4.jpeg",
+  },
+  {
+    name: "Deo Dubaï - Rose Oud",
+    description: "Un accord rose et oud doux, chic et facile à porter, avec un prix unique de 2500 FCFA pour une collection premium.",
+    image_url: "/deo/deo-dubai-5.jpeg",
+  },
+];
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -137,5 +165,12 @@ export const starterCatalog: StarterCatalogProduct[] = [
     compare_at_price: null,
     category: "deodorant" as const,
     stock: 25,
+  })),
+  ...dubaiDeodorants.map((deodorant) => ({
+    ...deodorant,
+    price: 2500,
+    compare_at_price: null,
+    category: "deodorant" as const,
+    stock: 20,
   })),
 ];

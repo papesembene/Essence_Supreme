@@ -12,20 +12,15 @@ import { createClient } from "@/lib/supabase";
 
 export const OPEN_CART_EVENT = "essence-supreme-open-cart";
 const PROMO_RATE = 0.05;
-const PROMO_TARGET_PRICE = 1500;
+const ROUND_PRICE_PROMO_DELTA = 80;
+const ROUND_PRICE_PROMO_PRICES = new Set([1580, 2580, 3080, 4080]);
 
 function calculatePromoDiscount(items: CartItem[]) {
   return items.reduce((discount, item) => {
     const itemTotal = item.product.price * item.quantity;
 
-    if (
-      item.product.price > PROMO_TARGET_PRICE &&
-      item.product.price < 2000
-    ) {
-      return (
-        discount +
-        (item.product.price - PROMO_TARGET_PRICE) * item.quantity
-      );
+    if (ROUND_PRICE_PROMO_PRICES.has(item.product.price)) {
+      return discount + ROUND_PRICE_PROMO_DELTA * item.quantity;
     }
 
     return discount + Math.round(itemTotal * PROMO_RATE);

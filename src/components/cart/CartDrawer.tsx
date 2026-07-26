@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import type { CartItem } from "@/components/cart/CartProvider";
 import { useCart } from "@/components/cart/CartProvider";
 import { buildCartMessage, whatsappUrl } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/pricing";
@@ -11,12 +12,25 @@ import { createClient } from "@/lib/supabase";
 
 export const OPEN_CART_EVENT = "essence-supreme-open-cart";
 const PROMO_RATE = 0.05;
-const MIN_PROMO_TOTAL = 1500;
+const DEODORANT_PROMO_TARGET_PRICE = 1500;
 
-function calculatePromoDiscount(amount: number) {
-  const rawDiscount = Math.round(amount * PROMO_RATE);
-  const maxDiscount = Math.max(0, amount - MIN_PROMO_TOTAL);
-  return Math.min(rawDiscount, maxDiscount);
+function calculatePromoDiscount(items: CartItem[]) {
+  return items.reduce((discount, item) => {
+    const itemTotal = item.product.price * item.quantity;
+
+    if (
+      item.product.category === "deodorant" &&
+      item.product.price > DEODORANT_PROMO_TARGET_PRICE &&
+      item.product.price < 2000
+    ) {
+      return (
+        discount +
+        (item.product.price - DEODORANT_PROMO_TARGET_PRICE) * item.quantity
+      );
+    }
+
+    return discount + Math.round(itemTotal * PROMO_RATE);
+  }, 0);
 }
 
 export function CartDrawer() {
@@ -83,7 +97,7 @@ export function CartDrawer() {
   );
   const normalizedPromoCode = promoCode.trim().toUpperCase();
   const promoIsValid = normalizedPromoCode === "AOUT26";
-  const discountAmount = promoIsValid ? calculatePromoDiscount(subtotal) : 0;
+  const discountAmount = promoIsValid ? calculatePromoDiscount(items) : 0;
   const total = Math.max(0, subtotal - discountAmount);
 
   const handleCheckout = async (group: (typeof groups)[number]) => {
@@ -107,7 +121,7 @@ export function CartDrawer() {
       0
     );
     const groupDiscountAmount = promoIsValid
-      ? calculatePromoDiscount(groupSubtotal)
+      ? calculatePromoDiscount(group.items)
       : 0;
     const message = buildCartMessage(group.items, {
       name: trimmedName,

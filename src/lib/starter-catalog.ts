@@ -65,32 +65,32 @@ const muskFormats = [
 const deodorants = [
   {
     name: "Déodorant Parfumé - Fraîcheur",
-    description: "Un déodorant parfumé frais et propre, idéal pour rester à l'aise toute la journée avec une senteur discrète.",
+    description: "Un déodorant parfumé frais et propre, idéal pour rester à l'aise toute la journée. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-1.jpeg",
   },
   {
     name: "Déodorant Parfumé - Élégance",
-    description: "Une senteur élégante et douce pour accompagner le quotidien, avec un prix accessible et une sensation de fraîcheur.",
+    description: "Une senteur élégante et douce pour accompagner le quotidien, avec une sensation de fraîcheur. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-2.jpeg",
   },
   {
     name: "Déodorant Parfumé - Intense",
-    description: "Un déodorant parfumé plus marqué, pensé pour celles et ceux qui aiment une présence propre et durable.",
+    description: "Un déodorant parfumé plus marqué, pensé pour celles et ceux qui aiment une présence propre et durable. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-3.jpeg",
   },
   {
     name: "Déodorant Parfumé - Douceur",
-    description: "Une formule parfumée agréable, facile à porter, parfaite après la douche ou avant de sortir.",
+    description: "Une formule parfumée agréable, facile à porter, parfaite après la douche ou avant de sortir. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-4.jpeg",
   },
   {
     name: "Déodorant Parfumé - Signature",
-    description: "Un déodorant parfumé au style soigné, pour garder une senteur nette sans payer cher.",
+    description: "Un déodorant parfumé au style soigné, pour garder une senteur nette sans payer cher. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-5.jpeg",
   },
   {
     name: "Déodorant Parfumé - Everyday",
-    description: "Le choix simple pour tous les jours: fraîcheur, bonne odeur et prix unique accessible.",
+    description: "Le choix simple pour tous les jours: fraîcheur, bonne odeur et prix accessible. Avec le code AOUT26, il revient à 1500 FCFA.",
     image_url: "/deo/deo-6.jpeg",
   },
 ];
@@ -161,7 +161,7 @@ export const starterCatalog: StarterCatalogProduct[] = [
   },
   ...deodorants.map((deodorant) => ({
     ...deodorant,
-    price: 1500,
+    price: 1580,
     compare_at_price: null,
     category: "deodorant" as const,
     stock: 25,

@@ -272,32 +272,55 @@ export default function AdminPage() {
   const handleImportStarterCatalog = async () => {
     if (!supabase) return;
     if (!adminWhatsapp) return alert("Enregistrez d'abord le WhatsApp de cet admin.");
-    if (!confirm(`Importer ${starterCatalog.length} produits de départ dans votre catalogue ?`)) return;
+    if (!confirm(`Synchroniser ${starterCatalog.length} produits du catalogue de départ ? Les produits existants avec le même nom seront mis à jour.`)) return;
 
     setImportLoading(true);
     try {
-      const existingNames = new Set(products.map((product) => product.name));
-      const productsToImport = starterCatalog
-        .filter((product) => !existingNames.has(product.name))
-        .map((product) => ({
-          ...product,
-          admin_id: session.user.id,
-          seller_name: adminName || session.user.email || "Vendeur",
-          seller_whatsapp: adminWhatsapp.replace(/[^\d]/g, ""),
-        }));
+      const existingByName = new Map(products.map((product) => [product.name, product]));
+      const sellerData = {
+        admin_id: session.user.id,
+        seller_name: adminName || session.user.email || "Vendeur",
+        seller_whatsapp: adminWhatsapp.replace(/[^\d]/g, ""),
+      };
+      const productsToImport = [];
+      const productsToUpdate = [];
 
-      if (productsToImport.length === 0) {
-        alert("Tous les produits du catalogue de départ existent déjà.");
+      for (const product of starterCatalog) {
+        const payload = {
+          ...product,
+          ...sellerData,
+        };
+        const existingProduct = existingByName.get(product.name);
+
+        if (existingProduct) {
+          productsToUpdate.push({ id: existingProduct.id, payload });
+        } else {
+          productsToImport.push(payload);
+        }
+      }
+
+      if (productsToImport.length === 0 && productsToUpdate.length === 0) {
+        alert("Aucun produit à synchroniser.");
         return;
       }
 
-      const { error } = await supabase.from("products").insert(productsToImport);
-      if (error) throw error;
+      if (productsToImport.length > 0) {
+        const { error } = await supabase.from("products").insert(productsToImport);
+        if (error) throw error;
+      }
 
-      alert(`${productsToImport.length} produits importés avec succès.`);
+      for (const product of productsToUpdate) {
+        const { error } = await supabase
+          .from("products")
+          .update(product.payload)
+          .eq("id", product.id);
+        if (error) throw error;
+      }
+
+      alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour.`);
       fetchProducts(session.user.id);
     } catch (err: any) {
-      alert("Erreur import catalogue: " + err.message);
+      alert("Erreur synchronisation catalogue: " + err.message);
     } finally {
       setImportLoading(false);
     }
@@ -486,7 +509,7 @@ export default function AdminPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handleImportStarterCatalog} disabled={importLoading} className="flex items-center justify-center space-x-2 border border-white/10 text-muted px-5 py-3 uppercase tracking-widest font-semibold hover:border-accent hover:text-accent transition-colors text-sm disabled:opacity-50">
                 {importLoading ? <Loader2 className="animate-spin" size={18} /> : <PackagePlus size={18} />}
-                <span>Importer catalogue</span>
+                <span>Synchroniser catalogue</span>
               </button>
               <button onClick={openAddForm} className="flex items-center justify-center space-x-2 bg-accent text-primary px-6 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors text-sm">
                 <Plus size={18} />

@@ -22,6 +22,8 @@ export function buildCartMessage(
     name?: string;
     phone?: string;
     address?: string;
+    promoCode?: string;
+    discountAmount?: number;
   }
 ) {
   const lines = items.map(({ product, quantity }, index) => {
@@ -29,10 +31,12 @@ export function buildCartMessage(
     return `${index + 1}. ${product.name} x${quantity} - ${formatPrice(total)}`;
   });
 
-  const total = items.reduce(
+  const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+  const discountAmount = customer?.discountAmount || 0;
+  const total = Math.max(0, subtotal - discountAmount);
 
   return [
     "Bonjour, je souhaite valider cette commande :",
@@ -43,6 +47,12 @@ export function buildCartMessage(
     "",
     ...lines,
     "",
+    customer?.promoCode && discountAmount > 0
+      ? `Sous-total: ${formatPrice(subtotal)}`
+      : null,
+    customer?.promoCode && discountAmount > 0
+      ? `Code promo: ${customer.promoCode} (-${formatPrice(discountAmount)})`
+      : null,
     `Total: ${formatPrice(total)}`,
     "",
     "Merci de me confirmer la disponibilité et la livraison."

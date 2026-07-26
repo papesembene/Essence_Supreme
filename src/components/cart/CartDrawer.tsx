@@ -17,6 +17,7 @@ export function CartDrawer() {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  const [promoCode, setPromoCode] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState("");
   const { items, count, removeItem, updateQuantity, clearCart } = useCart();
@@ -68,18 +69,27 @@ export function CartDrawer() {
     return Array.from(grouped.values());
   }, [items]);
 
-  const total = items.reduce(
+  const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+  const normalizedPromoCode = promoCode.trim().toUpperCase();
+  const promoIsValid = normalizedPromoCode === "AOUT26";
+  const discountAmount = promoIsValid ? Math.round(subtotal * 0.1) : 0;
+  const total = Math.max(0, subtotal - discountAmount);
 
   const handleCheckout = async (group: (typeof groups)[number]) => {
     const trimmedName = customerName.trim();
     const trimmedPhone = customerPhone.trim();
     const trimmedAddress = customerAddress.trim();
 
-    if (!trimmedName || !trimmedAddress) {
-      setCheckoutError("Ajoutez au moins votre nom et votre adresse avant WhatsApp.");
+    if (!trimmedName) {
+      setCheckoutError("Ajoutez votre nom avant WhatsApp.");
+      return;
+    }
+
+    if (normalizedPromoCode && !promoIsValid) {
+      setCheckoutError("Ce code promo n'est pas reconnu.");
       return;
     }
 
@@ -88,6 +98,15 @@ export function CartDrawer() {
       name: trimmedName,
       phone: trimmedPhone,
       address: trimmedAddress,
+      promoCode: promoIsValid ? normalizedPromoCode : undefined,
+      discountAmount: promoIsValid
+        ? Math.round(
+            group.items.reduce(
+              (sum, item) => sum + item.product.price * item.quantity,
+              0
+            ) * 0.1
+          )
+        : 0,
     });
     const url = whatsappUrl(group.sellerWhatsapp, message);
     const popup = window.open("", "_blank");
@@ -99,16 +118,27 @@ export function CartDrawer() {
         admin_id: group.items[0]?.product.admin_id || null,
         customer_name: trimmedName,
         customer_phone: trimmedPhone || null,
-        customer_address: trimmedAddress,
+        customer_address: trimmedAddress || null,
         items: group.items.map(({ product, quantity }) => ({
           id: product.id,
           name: product.name,
           price: product.price,
           quantity,
         })),
-        total: group.items.reduce(
-          (sum, item) => sum + item.product.price * item.quantity,
-          0
+        total: Math.max(
+          0,
+          group.items.reduce(
+            (sum, item) => sum + item.product.price * item.quantity,
+            0
+          ) -
+            (promoIsValid
+              ? Math.round(
+                  group.items.reduce(
+                    (sum, item) => sum + item.product.price * item.quantity,
+                    0
+                  ) * 0.1
+                )
+              : 0)
         ),
       });
     } finally {
@@ -244,17 +274,41 @@ export function CartDrawer() {
                       type="text"
                       value={customerAddress}
                       onChange={(e) => setCustomerAddress(e.target.value)}
-                      placeholder="Adresse de livraison *"
+                      placeholder="Adresse de livraison (optionnel)"
                       className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
                     />
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Code promo (ex: AOUT26)"
+                      className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm uppercase focus:border-accent outline-none"
+                    />
+                    {promoIsValid && (
+                      <p className="text-sm text-green-300">
+                        Code AOUT26 appliqué: -10%
+                      </p>
+                    )}
                     {checkoutError && (
                       <p className="text-sm text-red-300">{checkoutError}</p>
                     )}
                   </div>
 
-                  <div className="flex justify-between text-sm uppercase tracking-widest">
-                    <span className="text-muted">Total</span>
-                    <span className="text-accent">{formatPrice(total)}</span>
+                  <div className="space-y-2 text-sm uppercase tracking-widest">
+                    <div className="flex justify-between">
+                      <span className="text-muted">Sous-total</span>
+                      <span>{formatPrice(subtotal)}</span>
+                    </div>
+                    {discountAmount > 0 && (
+                      <div className="flex justify-between text-green-300">
+                        <span>Remise</span>
+                        <span>-{formatPrice(discountAmount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-t border-white/10 pt-2">
+                      <span className="text-muted">Total</span>
+                      <span className="text-accent">{formatPrice(total)}</span>
+                    </div>
                   </div>
 
                   {groups.map((group, index) => (

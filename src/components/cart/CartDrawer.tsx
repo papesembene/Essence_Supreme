@@ -11,6 +11,13 @@ import { createClient } from "@/lib/supabase";
 
 export const OPEN_CART_EVENT = "essence-supreme-open-cart";
 const PROMO_RATE = 0.05;
+const MIN_PROMO_TOTAL = 1500;
+
+function calculatePromoDiscount(amount: number) {
+  const rawDiscount = Math.round(amount * PROMO_RATE);
+  const maxDiscount = Math.max(0, amount - MIN_PROMO_TOTAL);
+  return Math.min(rawDiscount, maxDiscount);
+}
 
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
@@ -76,7 +83,7 @@ export function CartDrawer() {
   );
   const normalizedPromoCode = promoCode.trim().toUpperCase();
   const promoIsValid = normalizedPromoCode === "AOUT26";
-  const discountAmount = promoIsValid ? Math.round(subtotal * PROMO_RATE) : 0;
+  const discountAmount = promoIsValid ? calculatePromoDiscount(subtotal) : 0;
   const total = Math.max(0, subtotal - discountAmount);
 
   const handleCheckout = async (group: (typeof groups)[number]) => {
@@ -95,19 +102,19 @@ export function CartDrawer() {
     }
 
     setCheckoutError("");
+    const groupSubtotal = group.items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
+    const groupDiscountAmount = promoIsValid
+      ? calculatePromoDiscount(groupSubtotal)
+      : 0;
     const message = buildCartMessage(group.items, {
       name: trimmedName,
       phone: trimmedPhone,
       address: trimmedAddress,
       promoCode: promoIsValid ? normalizedPromoCode : undefined,
-      discountAmount: promoIsValid
-        ? Math.round(
-            group.items.reduce(
-              (sum, item) => sum + item.product.price * item.quantity,
-              0
-            ) * PROMO_RATE
-          )
-        : 0,
+      discountAmount: groupDiscountAmount,
     });
     const url = whatsappUrl(group.sellerWhatsapp, message);
     const popup = window.open("", "_blank");
@@ -126,21 +133,7 @@ export function CartDrawer() {
           price: product.price,
           quantity,
         })),
-        total: Math.max(
-          0,
-          group.items.reduce(
-            (sum, item) => sum + item.product.price * item.quantity,
-            0
-          ) -
-            (promoIsValid
-              ? Math.round(
-                  group.items.reduce(
-                    (sum, item) => sum + item.product.price * item.quantity,
-                    0
-                  ) * PROMO_RATE
-                )
-              : 0)
-        ),
+        total: Math.max(0, groupSubtotal - groupDiscountAmount),
       });
     } finally {
       setCheckoutLoading("");

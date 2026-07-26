@@ -62,6 +62,39 @@ const muskFormats = [
   { label: "Musc 5ml", price: 1000, compare_at_price: null, stock: 30 },
 ];
 
+const deodorants = [
+  {
+    name: "Déodorant Parfumé - Fraîcheur",
+    description: "Un déodorant parfumé frais et propre, idéal pour rester à l'aise toute la journée avec une senteur discrète.",
+    image_url: "/deo/deo-1.jpeg",
+  },
+  {
+    name: "Déodorant Parfumé - Élégance",
+    description: "Une senteur élégante et douce pour accompagner le quotidien, avec un prix accessible et une sensation de fraîcheur.",
+    image_url: "/deo/deo-2.jpeg",
+  },
+  {
+    name: "Déodorant Parfumé - Intense",
+    description: "Un déodorant parfumé plus marqué, pensé pour celles et ceux qui aiment une présence propre et durable.",
+    image_url: "/deo/deo-3.jpeg",
+  },
+  {
+    name: "Déodorant Parfumé - Douceur",
+    description: "Une formule parfumée agréable, facile à porter, parfaite après la douche ou avant de sortir.",
+    image_url: "/deo/deo-4.jpeg",
+  },
+  {
+    name: "Déodorant Parfumé - Signature",
+    description: "Un déodorant parfumé au style soigné, pour garder une senteur nette sans payer cher.",
+    image_url: "/deo/deo-5.jpeg",
+  },
+  {
+    name: "Déodorant Parfumé - Everyday",
+    description: "Le choix simple pour tous les jours: fraîcheur, bonne odeur et prix unique accessible.",
+    image_url: "/deo/deo-6.jpeg",
+  },
+];
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -98,13 +131,11 @@ export const starterCatalog: StarterCatalogProduct[] = [
     category: "brume",
     stock: 20,
   },
-  {
-    name: "Déodorant Parfumé",
-    description: "Un déodorant parfumé pour rester frais tout en gardant une senteur propre, agréable et adaptée au quotidien.",
+  ...deodorants.map((deodorant) => ({
+    ...deodorant,
     price: 1500,
     compare_at_price: null,
-    image_url: "/images/deodorant.png",
-    category: "deodorant",
+    category: "deodorant" as const,
     stock: 25,
-  },
+  })),
 ];

@@ -144,7 +144,7 @@ export default function Home() {
             </div>
           </Link>
           <Link href="/products?category=deodorant" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px] lg:translate-y-8">
-            <Image src="/images/deodorant.png" alt="Déodorants" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src="/deo/deo-1.jpeg" alt="Déodorants" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">DÉODORANTS</h3>

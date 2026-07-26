@@ -128,7 +128,7 @@ export default function Home() {
       <section className="border-y border-white/5 bg-[#08080C] py-20">
         <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Link href="/products?category=parfum" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px]">
-            <Image src="/images/perfume.png" alt="Parfums" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src="/parfums/parfum-4000-1.jpeg" alt="Parfums" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">PARFUMS</h3>

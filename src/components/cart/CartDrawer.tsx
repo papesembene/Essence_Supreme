@@ -12,20 +12,19 @@ import { createClient } from "@/lib/supabase";
 
 export const OPEN_CART_EVENT = "essence-supreme-open-cart";
 const PROMO_RATE = 0.05;
-const DEODORANT_PROMO_TARGET_PRICE = 1500;
+const PROMO_TARGET_PRICE = 1500;
 
 function calculatePromoDiscount(items: CartItem[]) {
   return items.reduce((discount, item) => {
     const itemTotal = item.product.price * item.quantity;
 
     if (
-      item.product.category === "deodorant" &&
-      item.product.price > DEODORANT_PROMO_TARGET_PRICE &&
+      item.product.price > PROMO_TARGET_PRICE &&
       item.product.price < 2000
     ) {
       return (
         discount +
-        (item.product.price - DEODORANT_PROMO_TARGET_PRICE) * item.quantity
+        (item.product.price - PROMO_TARGET_PRICE) * item.quantity
       );
     }
 

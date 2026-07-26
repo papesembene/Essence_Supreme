@@ -123,6 +123,47 @@ const dubaiDeodorants = [
   },
 ];
 
+const perfumes4000 = [
+  {
+    name: "Parfum Collection - Élégance",
+    description: "Un parfum raffiné à 4000 FCFA, pensé pour garder une senteur propre, chic et présente sans être trop lourde.",
+    image_url: "/parfums/parfum-4000-1.jpeg",
+  },
+  {
+    name: "Parfum Collection - Signature",
+    description: "Une fragrance élégante et moderne à 4000 FCFA, idéale pour les sorties, le travail et les moments importants.",
+    image_url: "/parfums/parfum-4000-2.jpeg",
+  },
+  {
+    name: "Parfum Collection - Prestige",
+    description: "Un parfum au style premium, avec une belle présence et un prix accessible de 4000 FCFA.",
+    image_url: "/parfums/parfum-4000-3.jpeg",
+  },
+  {
+    name: "Parfum Collection - Royal",
+    description: "Une senteur soignée, douce et marquante, proposée à 4000 FCFA pour un parfum élégant au quotidien.",
+    image_url: "/parfums/parfum-4000-4.jpeg",
+  },
+];
+
+const promoPerfumes = [
+  {
+    name: "Parfum Promo - Fresh",
+    description: "Un parfum accessible, frais et agréable. Avec le code AOUT26, il revient à 1500 FCFA.",
+    image_url: "/parfums/parfum-promo-1.png",
+  },
+  {
+    name: "Parfum Promo - Soft",
+    description: "Une senteur douce, propre et facile à porter. Avec le code AOUT26, il revient à 1500 FCFA.",
+    image_url: "/parfums/parfum-promo-2.png",
+  },
+  {
+    name: "Parfum Promo - Daily",
+    description: "Le bon plan parfum du quotidien: prix accessible, belle odeur et commande simple sur WhatsApp. Avec le code AOUT26, il revient à 1500 FCFA.",
+    image_url: "/parfums/parfum-promo-3.png",
+  },
+];
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -159,6 +200,20 @@ export const starterCatalog: StarterCatalogProduct[] = [
     category: "brume",
     stock: 20,
   },
+  ...perfumes4000.map((perfume) => ({
+    ...perfume,
+    price: 4000,
+    compare_at_price: null,
+    category: "parfum" as const,
+    stock: 20,
+  })),
+  ...promoPerfumes.map((perfume) => ({
+    ...perfume,
+    price: 1580,
+    compare_at_price: null,
+    category: "parfum" as const,
+    stock: 25,
+  })),
   ...deodorants.map((deodorant) => ({
     ...deodorant,
     price: 1580,

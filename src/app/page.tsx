@@ -16,16 +16,16 @@ export default function Home() {
   const featuredProducts = mockProducts.slice(0, 3);
   const testimonials = [
     {
-      initials: "K.F.",
-      quote: "Les huiles tiennent bien et les senteurs sont élégantes. J'ai reçu ma commande rapidement à Dakar."
+      name: "Khadidjatou Fall",
+      quote: "Les huiles sont trop bonnes et les prix restent moins chers. J'aime surtout le fait d'avoir de belles senteurs sans payer trop."
     },
     {
-      initials: "N.O.N.",
-      quote: "Très belle découverte. Les prix sont clairs, les formats sont pratiques et le parfum reste doux."
+      name: "Ndeye Oumy Ndiaye",
+      quote: "Les extraits tiennent bien, les formats sont pratiques et les prix sont uniques. C'est devenu mon bon plan parfum."
     },
     {
-      initials: "R.B.",
-      quote: "Service sérieux sur WhatsApp, conseils utiles et produits bien présentés. Je recommande."
+      name: "Rouguiyatou Barro",
+      quote: "Les muscs sentent vraiment bon, doux et élégants. Les prix sont abordables et on peut commander facilement sur WhatsApp."
     }
   ];
 
@@ -112,11 +112,11 @@ export default function Home() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {testimonials.map((testimonial) => (
-              <article key={testimonial.initials} className="border border-white/10 bg-primary/50 p-6">
+              <article key={testimonial.name} className="border border-white/10 bg-primary/50 p-6">
                 <Quote className="mb-6 text-accent" size={24} strokeWidth={1.4} />
                 <p className="mb-6 text-sm leading-7 text-muted">{testimonial.quote}</p>
                 <p className="font-serif text-lg tracking-widest text-secondary">
-                  {testimonial.initials}
+                  {testimonial.name}
                 </p>
               </article>
             ))}

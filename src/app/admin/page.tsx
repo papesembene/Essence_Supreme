@@ -6,6 +6,8 @@ import { Trash2, Plus, Loader2, PackagePlus } from "lucide-react";
 import { discountPercent, formatPrice } from "@/lib/pricing";
 import { starterCatalog } from "@/lib/starter-catalog";
 
+const PRIMARY_ADMIN_EMAIL = "sembenpape4@gmail.com";
+
 export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,8 @@ export default function AdminPage() {
     !supabaseUrl ? "NEXT_PUBLIC_SUPABASE_URL" : null,
     !supabaseKey ? "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" : null,
   ].filter(Boolean);
+  const isPrimaryAdmin =
+    session?.user?.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
 
   useEffect(() => {
     if (supabase) {
@@ -55,8 +59,8 @@ export default function AdminPage() {
         setSession(session);
         if (session) {
           fetchProfile(session.user.id, session.user.email, session.user.user_metadata);
-          fetchProducts(session.user.id);
-          fetchOrders(session.user.id);
+          fetchProducts(session.user.id, session.user.email);
+          fetchOrders(session.user.id, session.user.email);
         }
         else setLoading(false);
       });
@@ -65,8 +69,8 @@ export default function AdminPage() {
         setSession(session);
         if (session) {
           fetchProfile(session.user.id, session.user.email, session.user.user_metadata);
-          fetchProducts(session.user.id);
-          fetchOrders(session.user.id);
+          fetchProducts(session.user.id, session.user.email);
+          fetchOrders(session.user.id, session.user.email);
         }
       });
 
@@ -76,14 +80,16 @@ export default function AdminPage() {
     }
   }, [supabase]);
 
-  const fetchProducts = async (adminId?: string) => {
+  const fetchProducts = async (adminId?: string, adminEmail?: string) => {
     if (!supabase) return;
+    const shouldShowAll =
+      adminEmail?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
     let query = supabase
       .from('products')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (adminId) {
+    if (adminId && !shouldShowAll) {
       query = query.eq('admin_id', adminId);
     }
 
@@ -94,13 +100,20 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  const fetchOrders = async (adminId?: string) => {
+  const fetchOrders = async (adminId?: string, adminEmail?: string) => {
     if (!supabase || !adminId) return;
-    const { data } = await supabase
+    const shouldShowAll =
+      adminEmail?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
+    let query = supabase
       .from("orders")
       .select("*")
-      .eq("admin_id", adminId)
       .order("created_at", { ascending: false });
+
+    if (!shouldShowAll) {
+      query = query.eq("admin_id", adminId);
+    }
+
+    const { data } = await query;
     setOrders(data || []);
   };
 
@@ -239,20 +252,31 @@ export default function AdminPage() {
         seller_whatsapp: adminWhatsapp.replace(/[^\d]/g, "")
       };
 
-      const { error } = editingProductId
-        ? await supabase
-            .from('products')
-            .update(payload)
-            .eq('id', editingProductId)
-            .eq('admin_id', session.user.id)
-        : await supabase.from('products').insert([payload]);
+      let saveError;
 
-      if (error) throw error;
+      if (editingProductId) {
+        let query = supabase
+          .from('products')
+          .update(payload)
+          .eq('id', editingProductId);
+
+        if (!isPrimaryAdmin) {
+          query = query.eq('admin_id', session.user.id);
+        }
+
+        const { error } = await query;
+        saveError = error;
+      } else {
+        const { error } = await supabase.from('products').insert([payload]);
+        saveError = error;
+      }
+
+      if (saveError) throw saveError;
       
       alert(editingProductId ? "Produit modifié avec succès !" : "Produit ajouté avec succès !");
       setIsAddingMode(false);
       resetForm();
-      fetchProducts(session.user.id);
+      fetchProducts(session.user.id, session.user.email);
     } catch (err: any) {
       alert("Erreur lors de l'ajout: " + err.message);
     } finally {
@@ -265,7 +289,7 @@ export default function AdminPage() {
     setActionLoading(true);
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) alert(error.message);
-    else fetchProducts(session.user.id);
+    else fetchProducts(session.user.id, session.user.email);
     setActionLoading(false);
   };
 
@@ -318,7 +342,7 @@ export default function AdminPage() {
       }
 
       alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour.`);
-      fetchProducts(session.user.id);
+      fetchProducts(session.user.id, session.user.email);
     } catch (err: any) {
       alert("Erreur synchronisation catalogue: " + err.message);
     } finally {
@@ -328,13 +352,18 @@ export default function AdminPage() {
 
   const handleUpdateOrderStatus = async (id: string, status: string) => {
     if (!supabase) return;
-    const { error } = await supabase
+    let query = supabase
       .from("orders")
       .update({ status })
-      .eq("id", id)
-      .eq("admin_id", session.user.id);
+      .eq("id", id);
+
+    if (!isPrimaryAdmin) {
+      query = query.eq("admin_id", session.user.id);
+    }
+
+    const { error } = await query;
     if (error) alert(error.message);
-    else fetchOrders(session.user.id);
+    else fetchOrders(session.user.id, session.user.email);
   };
 
   const resetForm = () => {
@@ -578,7 +607,7 @@ export default function AdminPage() {
       <section className="mt-16 border-t border-white/5 pt-10">
         <div className="flex items-center justify-between mb-8">
           <h2 className="font-serif text-2xl tracking-wide text-white">Commandes</h2>
-          <button onClick={() => fetchOrders(session.user.id)} className="text-xs uppercase tracking-widest text-muted hover:text-accent transition-colors">
+          <button onClick={() => fetchOrders(session.user.id, session.user.email)} className="text-xs uppercase tracking-widest text-muted hover:text-accent transition-colors">
             Actualiser
           </button>
         </div>

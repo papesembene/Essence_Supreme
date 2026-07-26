@@ -10,6 +10,7 @@ import { formatPrice } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase";
 
 export const OPEN_CART_EVENT = "essence-supreme-open-cart";
+const PROMO_RATE = 0.05;
 
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
@@ -75,7 +76,7 @@ export function CartDrawer() {
   );
   const normalizedPromoCode = promoCode.trim().toUpperCase();
   const promoIsValid = normalizedPromoCode === "AOUT26";
-  const discountAmount = promoIsValid ? Math.round(subtotal * 0.1) : 0;
+  const discountAmount = promoIsValid ? Math.round(subtotal * PROMO_RATE) : 0;
   const total = Math.max(0, subtotal - discountAmount);
 
   const handleCheckout = async (group: (typeof groups)[number]) => {
@@ -104,7 +105,7 @@ export function CartDrawer() {
             group.items.reduce(
               (sum, item) => sum + item.product.price * item.quantity,
               0
-            ) * 0.1
+            ) * PROMO_RATE
           )
         : 0,
     });
@@ -136,7 +137,7 @@ export function CartDrawer() {
                   group.items.reduce(
                     (sum, item) => sum + item.product.price * item.quantity,
                     0
-                  ) * 0.1
+                  ) * PROMO_RATE
                 )
               : 0)
         ),
@@ -286,7 +287,7 @@ export function CartDrawer() {
                     />
                     {promoIsValid && (
                       <p className="text-sm text-green-300">
-                        Code AOUT26 appliqué: -10%
+                        Code AOUT26 appliqué: -5%
                       </p>
                     )}
                     {checkoutError && (

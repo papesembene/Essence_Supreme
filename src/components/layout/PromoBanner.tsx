@@ -9,7 +9,7 @@ export function PromoBanner() {
         className="inline-flex flex-wrap items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent transition-colors hover:text-white"
       >
         <Tag size={15} />
-        <span>-10% sur votre commande avec le code: AOUT26</span>
+        <span>-5% sur votre commande avec le code: AOUT26</span>
       </Link>
     </div>
   );

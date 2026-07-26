@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/product/ProductCard";
+import { ProductFilters } from "@/components/product/ProductFilters";
 import { mockProducts, Category, Product } from "@/lib/mock";
 import Link from "next/link";
 import { createServerSupabase } from "@/lib/supabase-server";
@@ -122,62 +123,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </div>
       </div>
 
-      <form action="/products" className="mb-14 border-y border-white/5 bg-[#08080C] px-4 py-6">
-        {categoryFilter && <input type="hidden" name="category" value={categoryFilter} />}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
-          <input
-            type="search"
-            name="q"
-            defaultValue={params.q || ""}
-            placeholder="Rechercher un produit"
-            className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
-          />
-          <input
-            type="number"
-            name="min"
-            min="0"
-            step="1"
-            defaultValue={params.min || ""}
-            placeholder="Prix min"
-            className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
-          />
-          <input
-            type="number"
-            name="max"
-            min="0"
-            step="1"
-            defaultValue={params.max || ""}
-            placeholder="Prix max"
-            className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
-          />
-          <select
-            name="sort"
-            defaultValue={sort}
-            className="w-full bg-primary border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
-          >
-            <option value="newest">Plus récents</option>
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-            <option value="name">Nom A-Z</option>
-          </select>
-          <button type="submit" className="bg-accent text-primary px-6 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors">
-            Filtrer
-          </button>
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-6 text-sm text-muted">
-          <label className="inline-flex items-center gap-2">
-            <input type="checkbox" name="stock" value="in" defaultChecked={stockFilter} className="accent-[#C8A96A]" />
-            En stock seulement
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input type="checkbox" name="promo" value="yes" defaultChecked={promoFilter} className="accent-[#C8A96A]" />
-            Promotions seulement
-          </label>
-          <Link href={categoryFilter ? `/products?category=${categoryFilter}` : "/products"} className="ml-auto uppercase tracking-widest text-xs hover:text-accent transition-colors">
-            Réinitialiser
-          </Link>
-        </div>
-      </form>
+      <ProductFilters
+        key={`${categoryFilter || "all"}-${params.q || ""}-${params.min || ""}-${params.max || ""}-${stockFilter}-${promoFilter}-${sort}`}
+        category={categoryFilter}
+        q={params.q || ""}
+        min={params.min || ""}
+        max={params.max || ""}
+        stock={stockFilter}
+        promo={promoFilter}
+        sort={sort}
+      />
 
       <div className="mb-8 text-sm text-muted">
         {filteredProducts.length} produit{filteredProducts.length > 1 ? "s" : ""} trouvé{filteredProducts.length > 1 ? "s" : ""}

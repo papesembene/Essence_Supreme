@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { FavoriteLink } from "@/components/product/FavoriteLink";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,11 +41,13 @@ export function Navbar() {
             <Link href="/about" className="hover:text-accent transition-colors duration-300">À PROPOS</Link>
           </nav>
 
-          <div className="hidden lg:flex items-center z-50">
+          <div className="hidden lg:flex items-center gap-6 z-50">
+            <FavoriteLink />
             <CartDrawer />
           </div>
 
           <div className="flex items-center space-x-5 z-50 lg:hidden">
+            <FavoriteLink />
             <CartDrawer />
             <button className="text-secondary hover:text-accent transition-colors" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X size={24} strokeWidth={1} /> : <Menu size={24} strokeWidth={1} />}
@@ -68,6 +71,7 @@ export function Navbar() {
               <Link href="/products?category=huile" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">HUILES</Link>
               <Link href="/products?category=deodorant" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">DÉODORANTS</Link>
               <Link href="/products?category=brume" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">BRUMES</Link>
+              <Link href="/favorites" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">FAVORIS</Link>
               <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-accent transition-colors">À PROPOS</Link>
             </nav>
           </motion.div>

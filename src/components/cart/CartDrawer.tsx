@@ -9,17 +9,27 @@ import { buildCartMessage, whatsappUrl } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase";
 
+export const OPEN_CART_EVENT = "essence-supreme-open-cart";
+
 export function CartDrawer() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  const [checkoutError, setCheckoutError] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState("");
   const { items, count, removeItem, updateQuantity, clearCart } = useCart();
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const openCart = () => setOpen(true);
+
+    window.addEventListener(OPEN_CART_EVENT, openCart);
+    return () => window.removeEventListener(OPEN_CART_EVENT, openCart);
   }, []);
 
   useEffect(() => {
@@ -64,7 +74,21 @@ export function CartDrawer() {
   );
 
   const handleCheckout = async (group: (typeof groups)[number]) => {
-    const message = buildCartMessage(group.sellerName, group.items);
+    const trimmedName = customerName.trim();
+    const trimmedPhone = customerPhone.trim();
+    const trimmedAddress = customerAddress.trim();
+
+    if (!trimmedName || !trimmedAddress) {
+      setCheckoutError("Ajoutez au moins votre nom et votre adresse avant WhatsApp.");
+      return;
+    }
+
+    setCheckoutError("");
+    const message = buildCartMessage(group.items, {
+      name: trimmedName,
+      phone: trimmedPhone,
+      address: trimmedAddress,
+    });
     const url = whatsappUrl(group.sellerWhatsapp, message);
     const popup = window.open("", "_blank");
     setCheckoutLoading(group.sellerWhatsapp);
@@ -73,9 +97,9 @@ export function CartDrawer() {
       const supabase = createClient();
       await supabase.from("orders").insert({
         admin_id: group.items[0]?.product.admin_id || null,
-        customer_name: customerName || null,
-        customer_phone: customerPhone || null,
-        customer_address: customerAddress || null,
+        customer_name: trimmedName,
+        customer_phone: trimmedPhone || null,
+        customer_address: trimmedAddress,
         items: group.items.map(({ product, quantity }) => ({
           id: product.id,
           name: product.name,
@@ -199,27 +223,33 @@ export function CartDrawer() {
 
                 <div className="flex-shrink-0 border-t border-white/10 p-5 sm:p-6 space-y-4 bg-primary">
                   <div className="grid grid-cols-1 gap-3">
+                    <p className="text-xs uppercase tracking-[0.18em] text-muted">
+                      Vos informations
+                    </p>
                     <input
                       type="text"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="Nom du client"
+                      placeholder="Nom et prénom *"
                       className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
                     />
                     <input
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
-                      placeholder="Téléphone"
+                      placeholder="Téléphone (optionnel)"
                       className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
                     />
                     <input
                       type="text"
                       value={customerAddress}
                       onChange={(e) => setCustomerAddress(e.target.value)}
-                      placeholder="Adresse de livraison"
+                      placeholder="Adresse de livraison *"
                       className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
                     />
+                    {checkoutError && (
+                      <p className="text-sm text-red-300">{checkoutError}</p>
+                    )}
                   </div>
 
                   <div className="flex justify-between text-sm uppercase tracking-widest">
@@ -233,7 +263,7 @@ export function CartDrawer() {
                       type="button"
                       onClick={() => handleCheckout(group)}
                       disabled={checkoutLoading === group.sellerWhatsapp}
-                      className="block w-full bg-accent text-primary px-4 py-4 text-center uppercase tracking-widest font-semibold hover:bg-white transition-colors"
+                      className="block w-full bg-accent text-primary px-4 py-3 text-center text-sm uppercase tracking-[0.18em] font-semibold hover:bg-white transition-colors disabled:opacity-60"
                     >
                       {checkoutLoading === group.sellerWhatsapp
                         ? "Ouverture..."

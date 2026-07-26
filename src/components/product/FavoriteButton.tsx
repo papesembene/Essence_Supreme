@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 
 const FAVORITES_KEY = "essence-supreme-favorites";
+const FAVORITES_EVENT = "essence-supreme-favorites-changed";
 
 function readFavorites() {
   if (typeof window === "undefined") return [];
@@ -37,6 +38,7 @@ export function FavoriteButton({
 
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(nextFavorites));
     setIsFavorite(nextFavorites.includes(productId));
+    window.dispatchEvent(new Event(FAVORITES_EVENT));
   };
 
   return (

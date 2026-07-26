@@ -17,8 +17,12 @@ export function buildSingleProductMessage(product: Product) {
 }
 
 export function buildCartMessage(
-  sellerName: string,
-  items: Array<{ product: Product; quantity: number }>
+  items: Array<{ product: Product; quantity: number }>,
+  customer?: {
+    name?: string;
+    phone?: string;
+    address?: string;
+  }
 ) {
   const lines = items.map(({ product, quantity }, index) => {
     const total = product.price * quantity;
@@ -31,14 +35,20 @@ export function buildCartMessage(
   );
 
   return [
-    `Bonjour ${sellerName}, je souhaite valider cette commande :`,
+    "Bonjour, je souhaite valider cette commande :",
+    "",
+    customer?.name ? `Client: ${customer.name}` : null,
+    customer?.phone ? `Téléphone: ${customer.phone}` : null,
+    customer?.address ? `Adresse: ${customer.address}` : null,
     "",
     ...lines,
     "",
     `Total: ${formatPrice(total)}`,
     "",
     "Merci de me confirmer la disponibilité et la livraison."
-  ].join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export function whatsappUrl(phone: string, message: string) {

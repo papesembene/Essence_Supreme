@@ -344,7 +344,13 @@ export default function AdminPage() {
       alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour.`);
       fetchProducts(session.user.id, session.user.email);
     } catch (err: any) {
-      alert("Erreur synchronisation catalogue: " + err.message);
+      if (err.message?.includes("product_category")) {
+        alert(
+          "Erreur catégorie Supabase: ajoutez la valeur 'brume' dans l'enum product_category depuis le SQL Editor, puis relancez la synchronisation."
+        );
+      } else {
+        alert("Erreur synchronisation catalogue: " + err.message);
+      }
     } finally {
       setImportLoading(false);
     }

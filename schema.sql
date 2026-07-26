@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   stock integer DEFAULT 0,
   seller_name text NOT NULL DEFAULT 'Essence Suprême',
   seller_whatsapp text NOT NULL DEFAULT '212600000000',
+  is_featured boolean NOT NULL DEFAULT false,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -49,7 +50,8 @@ ALTER TABLE public.products
   ADD COLUMN IF NOT EXISTS admin_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS compare_at_price numeric(10,2),
   ADD COLUMN IF NOT EXISTS seller_name text NOT NULL DEFAULT 'Essence Suprême',
-  ADD COLUMN IF NOT EXISTS seller_whatsapp text NOT NULL DEFAULT '212600000000';
+  ADD COLUMN IF NOT EXISTS seller_whatsapp text NOT NULL DEFAULT '212600000000',
+  ADD COLUMN IF NOT EXISTS is_featured boolean NOT NULL DEFAULT false;
 
 -- Sécurité Row Level Security (RLS)
 ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;

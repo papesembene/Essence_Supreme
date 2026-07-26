@@ -33,7 +33,7 @@ export function HomeContent({ featuredProducts }: { featuredProducts: Product[] 
       <section className="relative flex h-[82vh] min-h-[620px] w-full items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/parfums/parfum-4000-2.jpeg"
+            src="/images/hero.png"
             alt="Essence Suprême Luxe"
             fill
             className="object-cover object-center"

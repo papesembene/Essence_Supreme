@@ -3,15 +3,29 @@ import { mockProducts, Product } from "@/lib/mock";
 import { createServerSupabase } from "@/lib/supabase-server";
 
 function selectFeaturedProducts(products: Product[]) {
+  const manuallySelected = products
+    .filter((product) => product.is_featured)
+    .slice(0, 3);
+
+  if (manuallySelected.length >= 3) return manuallySelected;
+
   const categories = ["parfum", "deodorant", "brume"] as const;
+  const selectedIds = new Set(manuallySelected.map((product) => product.id));
   const selected = categories
-    .map((category) => products.find((product) => product.category === category))
+    .map((category) =>
+      products.find(
+        (product) =>
+          product.category === category && !selectedIds.has(product.id)
+      )
+    )
     .filter((product) => product !== undefined);
 
-  if (selected.length >= 3) return selected;
+  for (const product of selected) {
+    selectedIds.add(product.id);
+  }
 
-  const selectedIds = new Set(selected.map((product) => product.id));
   return [
+    ...manuallySelected,
     ...selected,
     ...products.filter((product) => !selectedIds.has(product.id)),
   ].slice(0, 3);

@@ -15,6 +15,7 @@ export interface Product {
   seller_name: string;
   seller_whatsapp: string;
   created_at?: string;
+  is_featured?: boolean;
 }
 
 export const mockProducts: Product[] = starterCatalog.map((product, index) => ({

@@ -24,6 +24,7 @@ export default function AdminPage() {
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const [productsPage, setProductsPage] = useState(1);
+  const [productSearch, setProductSearch] = useState("");
 
   // Form states
   const [adminName, setAdminName] = useState("");
@@ -54,12 +55,21 @@ export default function AdminPage() {
   ].filter(Boolean);
   const isPrimaryAdmin =
     session?.user?.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
+  const filteredAdminProducts = products.filter((product) => {
+    const search = productSearch.trim().toLowerCase();
+    if (!search) return true;
+
+    return [product.name, product.description, product.category]
+      .join(" ")
+      .toLowerCase()
+      .includes(search);
+  });
   const productsTotalPages = Math.max(
     1,
-    Math.ceil(products.length / ADMIN_PRODUCTS_PAGE_SIZE)
+    Math.ceil(filteredAdminProducts.length / ADMIN_PRODUCTS_PAGE_SIZE)
   );
   const safeProductsPage = Math.min(productsPage, productsTotalPages);
-  const paginatedProducts = products.slice(
+  const paginatedProducts = filteredAdminProducts.slice(
     (safeProductsPage - 1) * ADMIN_PRODUCTS_PAGE_SIZE,
     safeProductsPage * ADMIN_PRODUCTS_PAGE_SIZE
   );
@@ -303,6 +313,34 @@ export default function AdminPage() {
     if (error) alert(error.message);
     else fetchProducts(session.user.id, session.user.email);
     setActionLoading(false);
+  };
+
+  const handleToggleFeatured = async (product: any) => {
+    if (!supabase) return;
+    setActionLoading(true);
+
+    try {
+      let query = supabase
+        .from("products")
+        .update({ is_featured: !product.is_featured })
+        .eq("id", product.id);
+
+      if (!isPrimaryAdmin) {
+        query = query.eq("admin_id", session.user.id);
+      }
+
+      const { error } = await query;
+      if (error) throw error;
+      fetchProducts(session.user.id, session.user.email);
+    } catch (err: any) {
+      if (err.message?.includes("is_featured")) {
+        alert("Ajoutez la colonne is_featured dans Supabase avec le script SQL, puis réessayez.");
+      } else {
+        alert("Erreur sélection accueil: " + err.message);
+      }
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleImportStarterCatalog = async () => {
@@ -570,9 +608,25 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {products.length === 0 ? (
+          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <input
+              type="search"
+              value={productSearch}
+              onChange={(event) => {
+                setProductSearch(event.target.value);
+                setProductsPage(1);
+              }}
+              placeholder="Rechercher dans le catalogue admin"
+              className="w-full bg-[#0A0A0E] border border-white/10 px-4 py-3 text-sm focus:border-accent outline-none"
+            />
+            <p className="text-sm text-muted">
+              {filteredAdminProducts.length} résultat{filteredAdminProducts.length > 1 ? "s" : ""}
+            </p>
+          </div>
+
+          {filteredAdminProducts.length === 0 ? (
             <div className="bg-[#0A0A0E] p-12 text-center border border-white/5 text-muted font-light">
-              <p>Votre catalogue est vide. Ajoutez votre premier produit !</p>
+              <p>Aucun produit trouvé.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -583,6 +637,7 @@ export default function AdminPage() {
                     <th className="pb-4">Catégorie</th>
                     <th className="pb-4">Prix</th>
                     <th className="pb-4">Stock</th>
+                    <th className="pb-4">Accueil</th>
                     <th className="pb-4 text-right pr-4">Actions</th>
                   </tr>
                 </thead>
@@ -610,6 +665,20 @@ export default function AdminPage() {
                       <td className="py-4 font-light text-sm">
                         <span className={p.stock < 5 ? "text-red-400 font-medium" : "text-green-400"}>{p.stock}</span>
                       </td>
+                      <td className="py-4">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFeatured(p)}
+                          disabled={actionLoading}
+                          className={`border px-3 py-2 text-xs uppercase tracking-widest transition-colors ${
+                            p.is_featured
+                              ? "border-accent bg-accent text-primary"
+                              : "border-white/10 text-muted hover:border-accent hover:text-accent"
+                          } disabled:opacity-50`}
+                        >
+                          {p.is_featured ? "Affiché" : "Afficher"}
+                        </button>
+                      </td>
                       <td className="py-4 text-right pr-4">
                         <button onClick={() => openEditForm(p)} disabled={actionLoading} className="text-muted hover:text-accent transition-colors p-2 text-xs uppercase tracking-widest">
                           Modifier
@@ -622,7 +691,7 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              {products.length > ADMIN_PRODUCTS_PAGE_SIZE && (
+              {filteredAdminProducts.length > ADMIN_PRODUCTS_PAGE_SIZE && (
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted">
                     Page {safeProductsPage} / {productsTotalPages}

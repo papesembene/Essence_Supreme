@@ -41,6 +41,10 @@ export default function AdminPage() {
         : null,
     [supabaseUrl, supabaseKey]
   );
+  const missingSupabaseVars = [
+    !supabaseUrl ? "NEXT_PUBLIC_SUPABASE_URL" : null,
+    !supabaseKey ? "NEXT_PUBLIC_SUPABASE_ANON_KEY" : null,
+  ].filter(Boolean);
 
   useEffect(() => {
     if (supabase) {
@@ -349,7 +353,8 @@ export default function AdminPage() {
           </h1>
           {!supabase && (
             <div className="bg-red-500/10 text-red-500 p-4 font-light text-sm mb-8 border border-red-500/20 text-center leading-relaxed">
-              La connexion à Supabase est introuvable.<br/>Assurez-vous d'avoir bien configuré vos variables d'environnement.
+              La connexion à Supabase est introuvable.<br/>
+              Variable manquante dans ce déploiement: {missingSupabaseVars.join(", ")}.
             </div>
           )}
           <form onSubmit={isSignupMode ? handleSignup : handleLogin} className="space-y-6">

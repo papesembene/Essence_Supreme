@@ -202,6 +202,31 @@ const promoPerfumes: CatalogItem[] = [
   },
 ];
 
+const vvLoveBrumeStyles = [
+  "Cherry Love",
+  "Vanilla Glow",
+  "Sweet Rose",
+  "Coconut Dream",
+  "Amber Kiss",
+  "Fresh Bloom",
+  "Velvet Musk",
+  "Pink Sugar",
+  "Golden Mist",
+  "Soft Orchid",
+];
+
+const vvLoveBrumes: CatalogItem[] = Array.from({ length: 30 }, (_, index) => {
+  const style = vvLoveBrumeStyles[index % vvLoveBrumeStyles.length];
+
+  return {
+    name: `Brume VV Love - ${style} ${index + 1}`,
+    description: `Une brume VV Love légère et parfumée à 3000 FCFA, parfaite pour le corps et les vêtements. Senteur ${style.toLowerCase()}, douce, fraîche et facile à porter au quotidien.`,
+    price: 3000,
+    compare_at_price: 3500,
+    image_url: `/brumes/brume-vv-love-${index + 1}.jpeg`,
+  };
+});
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -238,6 +263,11 @@ export const starterCatalog: StarterCatalogProduct[] = [
     category: "brume",
     stock: 20,
   },
+  ...vvLoveBrumes.map((brume) => ({
+    ...brume,
+    category: "brume" as const,
+    stock: 20,
+  })),
   ...perfumes4000.map((perfume) => ({
     ...perfume,
     category: "parfum" as const,

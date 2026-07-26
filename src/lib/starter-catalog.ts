@@ -227,6 +227,26 @@ const vvLoveBrumes: CatalogItem[] = Array.from({ length: 30 }, (_, index) => {
   };
 });
 
+const madeInFranceBrumeStyles = [
+  "Éclat Floral",
+  "Vanille Douce",
+  "Rose Fraîche",
+  "Musc Blanc",
+  "Coco Chic",
+  "Amber Soft",
+  "Fresh Love",
+];
+
+const madeInFranceBrumes: CatalogItem[] = madeInFranceBrumeStyles.map(
+  (style, index) => ({
+    name: `Brume Made in France 250ml - ${style}`,
+    description: `Brume Made in France 250ml, meilleur de chez meilleur, avec une senteur ${style.toLowerCase()} élégante et agréable. Avec le code AOUT26, elle revient à 2500 FCFA.`,
+    price: 2580,
+    compare_at_price: 3000,
+    image_url: `/brumes/brume-france-${index + 1}.jpeg`,
+  })
+);
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -264,6 +284,11 @@ export const starterCatalog: StarterCatalogProduct[] = [
     stock: 20,
   },
   ...vvLoveBrumes.map((brume) => ({
+    ...brume,
+    category: "brume" as const,
+    stock: 20,
+  })),
+  ...madeInFranceBrumes.map((brume) => ({
     ...brume,
     category: "brume" as const,
     stock: 20,

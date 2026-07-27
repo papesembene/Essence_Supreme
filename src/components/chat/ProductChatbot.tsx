@@ -146,7 +146,7 @@ export function ProductChatbot() {
                     className="block border border-white/10 bg-primary/60 p-3 transition-colors hover:border-accent/70"
                     onClick={closeChat}
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:items-start min-[360px]:justify-between">
                       <div className="min-w-0">
                         <p className="line-clamp-2 text-sm font-semibold text-secondary">
                           {product.name}
@@ -161,7 +161,7 @@ export function ProductChatbot() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-2 flex items-center gap-2 text-sm">
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                       {product.compare_at_price &&
                         product.compare_at_price > product.price && (
                           <span className="text-xs text-muted line-through">
@@ -183,16 +183,16 @@ export function ProductChatbot() {
   }
 
   return (
-    <div className="fixed bottom-5 right-4 z-[9000] sm:right-6">
+    <div className="fixed inset-x-3 bottom-3 z-[9000] sm:inset-x-auto sm:right-6 sm:bottom-6">
       {isOpen && (
-        <div className="mb-4 flex h-[min(620px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-[390px] flex-col overflow-hidden border border-white/10 bg-[#101014] shadow-2xl shadow-black/50 sm:w-[390px]">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <div className="mb-3 flex h-[min(680px,calc(100dvh-5.5rem))] w-full flex-col overflow-hidden border border-white/10 bg-[#101014] shadow-2xl shadow-black/50 sm:mb-4 sm:w-[390px] sm:max-w-[calc(100vw-2rem)]">
+          <div className="flex items-center justify-between border-b border-white/10 px-3 py-3 sm:px-4">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
-                <Sparkles size={18} />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary sm:h-10 sm:w-10">
+                <Sparkles size={17} />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold uppercase tracking-[0.16em] text-secondary">
+                <p className="truncate text-xs font-semibold uppercase tracking-[0.14em] text-secondary sm:text-sm sm:tracking-[0.16em]">
                   Assistant IA Essence
                 </p>
                 <p className="text-xs text-muted">
@@ -203,14 +203,14 @@ export function ProductChatbot() {
             <button
               type="button"
               onClick={closeChat}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Fermer le chatbot"
             >
               <X size={18} />
             </button>
           </div>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+          <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3 sm:space-y-4 sm:px-4 sm:py-4">
             {renderMessages()}
             {isSending && (
               <div className="flex justify-start">
@@ -221,7 +221,7 @@ export function ProductChatbot() {
             )}
           </div>
 
-          <div className="border-t border-white/10 p-4">
+          <div className="border-t border-white/10 p-3 sm:p-4">
             <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
               {quickPrompts.map((prompt) => (
                 <button
@@ -246,13 +246,13 @@ export function ProductChatbot() {
                   onChange={(event) => setInput(event.target.value)}
                   placeholder="Ex: musc rose, brume 2500..."
                   disabled={isSending}
-                  className="h-12 w-full border border-white/10 bg-black/20 pl-10 pr-3 text-sm text-secondary outline-none transition-colors placeholder:text-muted focus:border-accent disabled:opacity-60"
+                  className="h-11 w-full border border-white/10 bg-black/20 pl-10 pr-3 text-sm text-secondary outline-none transition-colors placeholder:text-muted focus:border-accent disabled:opacity-60 sm:h-12"
                 />
               </label>
               <button
                 type="submit"
                 disabled={isSending}
-                className="flex h-12 w-12 shrink-0 items-center justify-center bg-accent text-primary transition-colors hover:bg-white disabled:opacity-60"
+                className="flex h-11 w-11 shrink-0 items-center justify-center bg-accent text-primary transition-colors hover:bg-white disabled:opacity-60 sm:h-12 sm:w-12"
                 aria-label="Envoyer"
               >
                 <Send size={18} />
@@ -265,7 +265,7 @@ export function ProductChatbot() {
       <button
         type="button"
         onClick={openChat}
-        className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent text-primary shadow-xl shadow-black/40 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent/50"
+        className="ml-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-accent text-primary shadow-xl shadow-black/40 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent/50 sm:h-14 sm:w-14"
         aria-label="Ouvrir le chatbot produit"
       >
         {isOpen ? <X size={22} /> : <MessageCircle size={24} />}

@@ -6,6 +6,7 @@ import { CartProvider } from "@/components/cart/CartProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PromoBanner } from "@/components/layout/PromoBanner";
+import { ProductChatbot } from "@/components/chat/ProductChatbot";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -27,6 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <ProductChatbot />
     </CartProvider>
   );
 }

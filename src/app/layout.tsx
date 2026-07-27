@@ -10,8 +10,8 @@ export const metadata: Metadata = {
       "msvalidate.01": "657AAEB6E2B7EA127066D010D92EDD44",
     },
   },
-  title: "Essence Supreme | Parfums, huiles et muscs à Keur Ndiaye Lo",
-  description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Keur Ndiaye Lo, Sénégal.",
+  title: "Essence Supreme | Parfums, huiles et muscs à Dakar",
+  description: "Essence Supreme, boutique en ligne de parfums, huiles parfumées, muscs, brumes et déodorants à Keur Ndiaye Lo et Mermoz, Dakar.",
   keywords: [
     "Essence Supreme",
     "Essence Suprême",
@@ -26,6 +26,8 @@ export const metadata: Metadata = {
     "brume parfumée",
     "déodorant parfumé",
     "Keur Ndiaye Lo",
+    "Mermoz École de Police",
+    "Orange Digital Center Dakar",
     "M, sem's",
   ],
   alternates: {
@@ -33,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Essence Supreme",
-    description: "Huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo, par M, sem's.",
+    description: "Huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo et Mermoz, par M, sem's.",
     url: "https://www.essence-supreme.store",
     siteName: "Essence Suprême",
     locale: "fr_SN",
@@ -60,17 +62,27 @@ export default function RootLayout({
       "@type": "Person",
       name: "M, sem's",
     },
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Keur Ndiaye Lo",
-      addressCountry: "SN",
-    },
+    address: [
+      {
+        "@type": "PostalAddress",
+        streetAddress: "Keur Ndiaye Lo",
+        addressLocality: "Keur Ndiaye Lo",
+        addressCountry: "SN",
+      },
+      {
+        "@type": "PostalAddress",
+        streetAddress: "Immeuble Scalène, Mermoz École de Police, lot B, Orange Digital Center",
+        addressLocality: "Dakar",
+        addressRegion: "Dakar",
+        addressCountry: "SN",
+      },
+    ],
     areaServed: {
       "@type": "Country",
       name: "Sénégal",
     },
     description:
-      "Boutique de parfums, huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo.",
+      "Boutique de parfums, huiles de parfum, muscs, brumes et déodorants à Keur Ndiaye Lo et Mermoz, Dakar.",
   };
 
   return (

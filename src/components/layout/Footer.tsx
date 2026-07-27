@@ -41,6 +41,12 @@ export function Footer() {
                   </a>
                   <MapPin size={16} strokeWidth={1} className="text-accent order-1 md:order-2 md:ml-3" />
                 </li>
+                <li className="flex items-start space-x-3 md:justify-end">
+                  <span className="order-2 md:order-1 max-w-[250px]">
+                    Immeuble Scalène, Mermoz École de Police, lot B, Orange Digital Center, Dakar
+                  </span>
+                  <MapPin size={16} strokeWidth={1} className="mt-0.5 text-accent order-1 md:order-2 md:ml-3" />
+                </li>
                 <li className="flex items-center space-x-3 md:justify-end">
                   <a href="mailto:contact@essence-supreme.store" className="order-2 md:order-1 hover:text-accent transition-colors">contact@essence-supreme.store</a>
                   <Mail size={16} strokeWidth={1} className="text-accent order-1 md:order-2 md:ml-3" />

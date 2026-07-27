@@ -3,9 +3,9 @@ import Link from "next/link";
 import { Mail, MapPin, Sparkles, Truck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "À propos | Essence Supreme Keur Ndiaye Lo",
+  title: "À propos | Essence Supreme Dakar",
   description:
-    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Keur Ndiaye Lo, Sénégal. Propriétaire: M, sem's.",
+    "Essence Supreme est une boutique de parfums, huiles de parfum, muscs, brumes et déodorants basée à Keur Ndiaye Lo et Mermoz, Dakar. Propriétaire: M, sem's.",
   alternates: {
     canonical: "/about",
   },
@@ -16,14 +16,15 @@ export default function AboutPage() {
     <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <section className="max-w-4xl">
         <p className="text-accent uppercase tracking-widest text-sm mb-4">
-          Keur Ndiaye Lo, Sénégal
+          Keur Ndiaye Lo et Mermoz, Dakar
         </p>
         <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl tracking-widest leading-tight mb-8">
           ESSENCE SUPREME
         </h1>
         <p className="text-muted text-lg sm:text-xl font-light leading-relaxed">
           Essence Supreme, aussi appelée Essence Suprême, est une boutique de
-          parfums basée à Keur Ndiaye Lo. Nous proposons des huiles de parfum, muscs,
+          parfums basée à Keur Ndiaye Lo, avec un point à Mermoz au niveau de
+          l&apos;Orange Digital Center. Nous proposons des huiles de parfum, muscs,
           brumes parfumées et déodorants pour celles et ceux qui veulent une
           senteur élégante, accessible et facile à porter au quotidien.
         </p>
@@ -48,9 +49,9 @@ export default function AboutPage() {
             Notre base
           </h2>
           <p className="text-muted font-light leading-relaxed">
-            La boutique est basée à Keur Ndiaye Lo, Sénégal. Les commandes sont
-            préparées avec attention et confirmées directement par WhatsApp pour
-            garder un contact simple et rapide avec les clients.
+            La boutique est basée à Keur Ndiaye Lo, Sénégal, avec une deuxième
+            adresse à Mermoz: Immeuble Scalène, Mermoz École de Police, lot B,
+            Orange Digital Center, Dakar.
           </p>
         </div>
 
@@ -89,6 +90,13 @@ export default function AboutPage() {
             >
               Keur Ndiaye Lo, Sénégal
             </a>
+          </p>
+          <p className="flex items-start gap-3">
+            <MapPin size={18} className="mt-0.5 text-accent" />
+            <span>
+              Immeuble Scalène, Mermoz École de Police, lot B, Orange Digital
+              Center, Dakar
+            </span>
           </p>
           <a
             href="mailto:contact@essence-supreme.store"

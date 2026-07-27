@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { MessageCircle, Search, Send, Sparkles, X } from "lucide-react";
 import { Product } from "@/lib/mock";
@@ -29,126 +29,9 @@ const categoryLabels: Record<Product["category"], string> = {
   brume: "Brume"
 };
 
-function normalizeText(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\w\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function getCategoryIntent(query: string): Product["category"] | null {
-  if (/\b(brume|vv love|made in france)\b/.test(query)) return "brume";
-  if (/\b(deo|deodorant|deodorants|duba[iy])\b/.test(query)) return "deodorant";
-  if (/\b(parfum|extrait|collection)\b/.test(query)) return "parfum";
-  if (/\b(huile|musc|musk|rollon|roll on)\b/.test(query)) return "huile";
-  return null;
-}
-
-function getBudget(query: string) {
-  const prices = query.match(/\d[\d\s.]*/g);
-  if (!prices?.length) return null;
-
-  const value = Number(prices[0].replace(/\D/g, ""));
-  if (!value) return null;
-
-  if (/\b(plus de|minimum|min)\b/.test(query)) {
-    return { type: "min" as const, value };
-  }
-
-  return { type: "max" as const, value: value + 120 };
-}
-
-function scoreProduct(product: Product, query: string, terms: string[]) {
-  const categoryIntent = getCategoryIntent(query);
-  const budget = getBudget(query);
-  const searchable = normalizeText(
-    `${product.name} ${product.description} ${product.category}`
-  );
-  let score = 0;
-
-  if (categoryIntent && product.category === categoryIntent) score += 10;
-  if (query.includes("musc") && searchable.includes("musc")) score += 8;
-  if (query.includes("dubai") && searchable.includes("dubai")) score += 8;
-  if (query.includes("france") && searchable.includes("france")) score += 8;
-
-  for (const term of terms) {
-    if (term.length < 3 || ["fcfa", "prix", "cherche", "veux"].includes(term)) {
-      continue;
-    }
-    if (searchable.includes(term)) score += 3;
-  }
-
-  if (budget) {
-    if (budget.type === "max" && product.price <= budget.value) score += 5;
-    if (budget.type === "min" && product.price >= budget.value) score += 5;
-  }
-
-  return score;
-}
-
-function findSuggestions(products: Product[], message: string) {
-  const query = normalizeText(message);
-  const terms = query.split(" ").filter(Boolean);
-  const categoryIntent = getCategoryIntent(query);
-  const scored = products
-    .map((product) => ({ product, score: scoreProduct(product, query, terms) }))
-    .filter(({ product, score }) => {
-      if (score <= 0) return false;
-      if (!categoryIntent) return true;
-      return product.category === categoryIntent;
-    })
-    .sort((a, b) => b.score - a.score || a.product.price - b.product.price)
-    .map(({ product }) => product);
-
-  if (scored.length) return scored.slice(0, 4);
-
-  return [...products]
-    .sort((a, b) => {
-      const first = a.created_at ? new Date(a.created_at).getTime() : 0;
-      const second = b.created_at ? new Date(b.created_at).getTime() : 0;
-      return second - first;
-    })
-    .slice(0, 4);
-}
-
-function buildAnswer(products: Product[], userText: string) {
-  const query = normalizeText(userText);
-  const suggestions = findSuggestions(products, userText);
-
-  if (!products.length) {
-    return {
-      text: "Je n'arrive pas à charger le catalogue pour le moment. Vous pouvez ouvrir la page produits ou commander directement par WhatsApp.",
-      products: []
-    };
-  }
-
-  if (suggestions.length && (getCategoryIntent(query) || getBudget(query))) {
-    return {
-      text: "Voici les produits qui correspondent le mieux à votre recherche.",
-      products: suggestions
-    };
-  }
-
-  if (suggestions.length) {
-    return {
-      text: "Je vous propose ces produits disponibles. Vous pouvez aussi préciser une senteur, une catégorie ou un budget.",
-      products: suggestions
-    };
-  }
-
-  return {
-    text: "Je n'ai pas trouvé de résultat exact. Essayez par exemple: brume 2500, musc rose, deo Dubai ou parfum 4000.",
-    products: []
-  };
-}
-
 export function ProductChatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -158,55 +41,145 @@ export function ProductChatbot() {
     }
   ]);
 
-  const productCount = useMemo(() => products.length, [products]);
+  function openChat() {
+    setIsOpen(true);
+  }
 
-  async function loadProducts() {
-    if (products.length || isLoading) return;
-    setIsLoading(true);
+  async function sendMessage(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed || isSending) return;
+
+    const visibleHistory = messages
+      .filter((message) => !("products" in message && message.products?.length))
+      .map((message) => ({ role: message.role, text: message.text }));
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      text: trimmed
+    };
+
+    setMessages((current) => [...current, userMessage]);
+    setInput("");
+    setIsSending(true);
+
     try {
-      const response = await fetch("/api/chatbot/products");
-      const data = (await response.json()) as { products?: Product[] };
-      setProducts(data.products || []);
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: trimmed,
+          history: visibleHistory
+        })
+      });
+      const answer = (await response.json()) as {
+        text?: string;
+        products?: Product[];
+      };
+
+      setMessages((current) => [
+        ...current,
+        {
+          id: `assistant-${Date.now()}`,
+          role: "assistant",
+          text:
+            answer.text ||
+            "Je peux vous aider sur les produits Essence Suprême, les prix, la commande et la livraison.",
+          products: answer.products || []
+        }
+      ]);
     } catch {
       setMessages((current) => [
         ...current,
         {
-          id: `error-${Date.now()}`,
+          id: `assistant-error-${Date.now()}`,
           role: "assistant",
-          text: "Je n'arrive pas à charger le catalogue. Réessayez dans quelques instants."
+          text: "L'assistant IA est indisponible pour le moment. Réessayez dans quelques instants.",
+          products: []
         }
       ]);
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   }
 
-  function openChat() {
-    setIsOpen(true);
-    void loadProducts();
-  }
-
-  function sendMessage(text: string) {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-
-    const answer = buildAnswer(products, trimmed);
-    setMessages((current) => [
-      ...current,
-      { id: `user-${Date.now()}`, role: "user", text: trimmed },
-      {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        text: answer.text,
-        products: answer.products
-      }
-    ]);
-    setInput("");
+  function sendQuickPrompt(prompt: string) {
+    void sendMessage(prompt);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    sendMessage(input);
+    void sendMessage(input);
+  }
+
+  function closeChat() {
+    setIsOpen(false);
+  }
+
+  function renderMessages() {
+    return messages.map((message) => (
+      <div
+        key={message.id}
+        className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+      >
+        <div
+          className={`max-w-[86%] ${
+            message.role === "user"
+              ? "bg-accent px-4 py-3 text-primary"
+              : "bg-white/[0.06] px-4 py-3 text-secondary"
+          }`}
+        >
+          <p className="text-sm leading-relaxed">{message.text}</p>
+          {"products" in message && message.products?.length ? (
+            <div className="mt-3 space-y-2">
+              {message.products.map((product) => {
+                const discount = discountPercent(
+                  product.price,
+                  product.compare_at_price
+                );
+
+                return (
+                  <Link
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className="block border border-white/10 bg-primary/60 p-3 transition-colors hover:border-accent/70"
+                    onClick={closeChat}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="line-clamp-2 text-sm font-semibold text-secondary">
+                          {product.name}
+                        </p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-accent">
+                          {categoryLabels[product.category]}
+                        </p>
+                      </div>
+                      {discount && (
+                        <span className="shrink-0 bg-red-500/15 px-2 py-1 text-[11px] font-semibold text-red-300">
+                          -{discount}%
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-sm">
+                      {product.compare_at_price &&
+                        product.compare_at_price > product.price && (
+                          <span className="text-xs text-muted line-through">
+                            {formatPrice(product.compare_at_price)}
+                          </span>
+                        )}
+                      <span className="font-semibold text-white">
+                        {formatPrice(product.price)}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    ));
   }
 
   return (
@@ -220,16 +193,16 @@ export function ProductChatbot() {
               </span>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold uppercase tracking-[0.16em] text-secondary">
-                  Assistant Essence
+                  Assistant IA Essence
                 </p>
                 <p className="text-xs text-muted">
-                  {isLoading ? "Chargement..." : `${productCount} produits à conseiller`}
+                  Produits, prix et commande
                 </p>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={closeChat}
               className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Fermer le chatbot"
             >
@@ -238,68 +211,14 @@ export function ProductChatbot() {
           </div>
 
           <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[86%] ${
-                    message.role === "user"
-                      ? "bg-accent px-4 py-3 text-primary"
-                      : "bg-white/[0.06] px-4 py-3 text-secondary"
-                  }`}
-                >
-                  <p className="text-sm leading-relaxed">{message.text}</p>
-                  {"products" in message && message.products?.length ? (
-                    <div className="mt-3 space-y-2">
-                      {message.products.map((product) => {
-                        const discount = discountPercent(
-                          product.price,
-                          product.compare_at_price
-                        );
-
-                        return (
-                          <Link
-                            key={product.id}
-                            href={`/products/${product.id}`}
-                            className="block border border-white/10 bg-primary/60 p-3 transition-colors hover:border-accent/70"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="line-clamp-2 text-sm font-semibold text-secondary">
-                                  {product.name}
-                                </p>
-                                <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-accent">
-                                  {categoryLabels[product.category]}
-                                </p>
-                              </div>
-                              {discount && (
-                                <span className="shrink-0 bg-red-500/15 px-2 py-1 text-[11px] font-semibold text-red-300">
-                                  -{discount}%
-                                </span>
-                              )}
-                            </div>
-                            <div className="mt-2 flex items-center gap-2 text-sm">
-                              {product.compare_at_price &&
-                                product.compare_at_price > product.price && (
-                                  <span className="text-xs text-muted line-through">
-                                    {formatPrice(product.compare_at_price)}
-                                  </span>
-                                )}
-                              <span className="font-semibold text-white">
-                                {formatPrice(product.price)}
-                              </span>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  ) : null}
+            {renderMessages()}
+            {isSending && (
+              <div className="flex justify-start">
+                <div className="bg-white/[0.06] px-4 py-3 text-sm text-muted">
+                  Je réfléchis...
                 </div>
               </div>
-            ))}
+            )}
           </div>
 
           <div className="border-t border-white/10 p-4">
@@ -308,8 +227,9 @@ export function ProductChatbot() {
                 <button
                   key={prompt}
                   type="button"
-                  onClick={() => sendMessage(prompt)}
-                  className="shrink-0 border border-white/10 px-3 py-2 text-xs text-muted transition-colors hover:border-accent hover:text-accent"
+                  onClick={() => sendQuickPrompt(prompt)}
+                  disabled={isSending}
+                  className="shrink-0 border border-white/10 px-3 py-2 text-xs text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
                 >
                   {prompt}
                 </button>
@@ -325,12 +245,14 @@ export function ProductChatbot() {
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   placeholder="Ex: musc rose, brume 2500..."
-                  className="h-12 w-full border border-white/10 bg-black/20 pl-10 pr-3 text-sm text-secondary outline-none transition-colors placeholder:text-muted focus:border-accent"
+                  disabled={isSending}
+                  className="h-12 w-full border border-white/10 bg-black/20 pl-10 pr-3 text-sm text-secondary outline-none transition-colors placeholder:text-muted focus:border-accent disabled:opacity-60"
                 />
               </label>
               <button
                 type="submit"
-                className="flex h-12 w-12 shrink-0 items-center justify-center bg-accent text-primary transition-colors hover:bg-white"
+                disabled={isSending}
+                className="flex h-12 w-12 shrink-0 items-center justify-center bg-accent text-primary transition-colors hover:bg-white disabled:opacity-60"
                 aria-label="Envoyer"
               >
                 <Send size={18} />

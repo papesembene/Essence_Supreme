@@ -13,6 +13,16 @@ type ProductRecord = Product & {
   price: number | string;
 };
 
+class OpenAIRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code?: string
+  ) {
+    super(message);
+  }
+}
+
 function normalizeProduct(product: ProductRecord): Product {
   return {
     ...product,
@@ -67,6 +77,41 @@ function extractOutputText(payload: unknown) {
     return payload.output_text;
   }
 
+  if (
+    typeof payload === "object" &&
+    payload !== null &&
+    "output" in payload &&
+    Array.isArray(payload.output)
+  ) {
+    return payload.output
+      .flatMap((item) => {
+        if (
+          typeof item !== "object" ||
+          item === null ||
+          !("content" in item) ||
+          !Array.isArray(item.content)
+        ) {
+          return [];
+        }
+
+        return (item.content as unknown[])
+          .map((content: unknown) => {
+            if (
+              typeof content === "object" &&
+              content !== null &&
+              "text" in content &&
+              typeof content.text === "string"
+            ) {
+              return content.text;
+            }
+
+            return "";
+          })
+          .filter(Boolean);
+      })
+      .join("\n");
+  }
+
   return "";
 }
 
@@ -88,6 +133,86 @@ function parseAssistantJson(text: string) {
       productIds: []
     };
   }
+}
+
+function getModelsToTry() {
+  return [
+    process.env.OPENAI_CHAT_MODEL,
+    "gpt-4o-mini",
+    "gpt-5.6-luna"
+  ].filter((model, index, models): model is string => {
+    return Boolean(model) && models.indexOf(model) === index;
+  });
+}
+
+async function requestOpenAI(prompt: string) {
+  const models = getModelsToTry();
+  let lastError: OpenAIRequestError | null = null;
+
+  for (const model of models) {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        input: prompt,
+        max_output_tokens: 500
+      })
+    });
+
+    if (response.ok) {
+      return response.json() as Promise<unknown>;
+    }
+
+    const errorText = await response.text();
+    let code: string | undefined;
+    let message = errorText;
+
+    try {
+      const parsed = JSON.parse(errorText) as {
+        error?: {
+          code?: string;
+          message?: string;
+          type?: string;
+        };
+      };
+      code = parsed.error?.code || parsed.error?.type;
+      message = parsed.error?.message || errorText;
+    } catch {
+      message = errorText;
+    }
+
+    lastError = new OpenAIRequestError(message, response.status, code);
+
+    if (![400, 404].includes(response.status)) {
+      throw lastError;
+    }
+  }
+
+  throw lastError || new OpenAIRequestError("OpenAI request failed", 500);
+}
+
+function userFriendlyOpenAIError(error: unknown) {
+  if (!(error instanceof OpenAIRequestError)) {
+    return "L'assistant IA est momentanément indisponible. Vous pouvez chercher dans la page Produits ou commander par WhatsApp.";
+  }
+
+  if (error.status === 401) {
+    return "La clé OpenAI semble invalide. Vérifiez OPENAI_API_KEY dans Vercel, puis redéployez.";
+  }
+
+  if (error.status === 429 || error.code === "insufficient_quota") {
+    return "Le compte OpenAI n'a pas assez de crédit ou a atteint sa limite. Ajoutez du crédit sur OpenAI Platform, puis réessayez.";
+  }
+
+  if (error.status === 400 || error.status === 404) {
+    return "Le modèle OpenAI configuré n'est pas disponible sur ce compte. Supprimez OPENAI_CHAT_MODEL dans Vercel ou mettez gpt-4o-mini.";
+  }
+
+  return "OpenAI ne répond pas correctement pour le moment. Réessayez dans quelques instants.";
 }
 
 export async function POST(request: Request) {
@@ -146,24 +271,7 @@ ${userMessage}
 `;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_CHAT_MODEL || "gpt-5.6-luna",
-        input: prompt,
-        max_output_tokens: 500
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI request failed with status ${response.status}`);
-    }
-
-    const payload = (await response.json()) as unknown;
+    const payload = await requestOpenAI(prompt);
     const answer = parseAssistantJson(extractOutputText(payload));
     const selectedProducts = answer.productIds
       .map((id) => products.find((product) => product.id === id))
@@ -176,10 +284,11 @@ ${userMessage}
         "Je peux vous aider sur les produits Essence Suprême, les prix, la commande et la livraison.",
       products: selectedProducts
     });
-  } catch {
+  } catch (error) {
+    console.error("Chatbot OpenAI error", error);
     return Response.json(
       {
-        text: "L'assistant IA est momentanément indisponible. Vous pouvez chercher dans la page Produits ou commander par WhatsApp.",
+        text: userFriendlyOpenAIError(error),
         products: []
       },
       { status: 503 }

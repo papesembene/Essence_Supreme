@@ -281,6 +281,10 @@ const photographedExtractProducts: CatalogItem[] = [
   },
 ];
 
+export const requiredExtractProductNames = photographedExtractProducts.map(
+  (product) => product.name
+);
+
 const photographedOilProducts: CatalogItem[] = [
   {
     name: "Hypnotic - Huile 3ml",

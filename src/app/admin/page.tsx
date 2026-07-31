@@ -6,6 +6,7 @@ import { Trash2, Plus, Loader2, PackagePlus } from "lucide-react";
 import { discountPercent, formatPrice } from "@/lib/pricing";
 import {
   deprecatedStarterProductNames,
+  requiredExtractProductNames,
   starterCatalog
 } from "@/lib/starter-catalog";
 
@@ -380,6 +381,18 @@ export default function AdminPage() {
 
     setImportLoading(true);
     try {
+      const { error: extractExclusionError } = await supabase
+        .from("catalog_import_exclusions")
+        .delete()
+        .eq("admin_id", session.user.id)
+        .in("product_name", requiredExtractProductNames);
+
+      if (extractExclusionError) {
+        throw new Error(
+          "Impossible de réactiver les extraits. Vérifiez la table catalog_import_exclusions dans Supabase, puis réessayez."
+        );
+      }
+
       const { data: excludedProducts, error: excludedProductsError } = await supabase
         .from("catalog_import_exclusions")
         .select("product_name")

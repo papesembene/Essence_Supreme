@@ -247,6 +247,117 @@ const madeInFranceBrumes: CatalogItem[] = madeInFranceBrumeStyles.map(
   })
 );
 
+const brumes100ml: CatalogItem[] = [
+  {
+    name: "Brume 100ml - Poussière d'Or",
+    description: "Une brume 100ml lumineuse et douce, pensée pour parfumer le corps et les vêtements avec une senteur élégante au quotidien.",
+    price: 2000,
+    compare_at_price: 2500,
+    image_url: "/brumes/brume-100ml-poussiere-dor-2000.jpeg",
+  },
+  {
+    name: "Brume 100ml - Black XS",
+    description: "Une brume 100ml au caractère plus marqué, idéale pour celles et ceux qui aiment une senteur présente, moderne et accessible.",
+    price: 2000,
+    compare_at_price: 2500,
+    image_url: "/brumes/brume-100ml-black-xs-2000.jpeg",
+  },
+  {
+    name: "Brume 100ml - Ocean Louange",
+    description: "Une brume 100ml fraîche et agréable, parfaite pour une sensation propre et légère pendant la journée.",
+    price: 2000,
+    compare_at_price: 2500,
+    image_url: "/brumes/brume-100ml-ocean-louange-2000.jpeg",
+  },
+];
+
+const photographedOilProducts: CatalogItem[] = [
+  {
+    name: "Kayali 81 - Extrait de Parfum 20ml",
+    description: "Extrait de parfum 20ml Kayali 81, doux, élégant et très féminin, pratique pour garder une belle senteur dans son sac.",
+    price: 2500,
+    compare_at_price: 3000,
+    image_url: "/huiles/extrait-20ml-kayali-81-2500.jpeg",
+  },
+  {
+    name: "Hugo Boss - Extrait de Parfum 20ml",
+    description: "Extrait de parfum 20ml inspiré Hugo Boss, propre, chic et facile à porter au quotidien comme en sortie.",
+    price: 2500,
+    compare_at_price: 3000,
+    image_url: "/huiles/extrait-20ml-hugo-boss-2500.jpeg",
+  },
+  {
+    name: "Scandale - Extrait de Parfum 20ml",
+    description: "Extrait de parfum 20ml Scandale, une senteur sensuelle et gourmande avec une belle présence.",
+    price: 2500,
+    compare_at_price: 3000,
+    image_url: "/huiles/extrait-20ml-scandale-2500.jpeg",
+  },
+  {
+    name: "Hypnotic - Huile 3ml",
+    description: "Huile de parfum 3ml Hypnotic, petit format pratique pour découvrir la senteur ou l'emporter partout.",
+    price: 700,
+    compare_at_price: null,
+    image_url: "/huiles/hypnotic-huile-3ml-700.jpeg",
+  },
+  {
+    name: "Poussière d'Or - Huile 3ml",
+    description: "Huile de parfum 3ml Poussière d'Or, une senteur douce et lumineuse dans un format accessible.",
+    price: 700,
+    compare_at_price: null,
+    image_url: "/huiles/poussiere-dor-huile-3ml-700.jpeg",
+  },
+  {
+    name: "Kim K - Huile 5ml",
+    description: "Huile de parfum 5ml Kim K, florale, douce et glamour, idéale pour un parfumage féminin au quotidien.",
+    price: 1000,
+    compare_at_price: null,
+    image_url: "/huiles/kim-k-huile-5ml-1000.jpeg",
+  },
+  {
+    name: "Musc Rouge - Musc 5ml",
+    description: "Musc Rouge 5ml, une senteur musquée intense, propre et élégante avec un format économique.",
+    price: 1000,
+    compare_at_price: null,
+    image_url: "/huiles/musc-rouge-5ml-1000.jpeg",
+  },
+  {
+    name: "Musc Yara S - Musc 5ml",
+    description: "Musc Yara S 5ml, doux, féminin et agréable pour garder une senteur propre toute la journée.",
+    price: 1000,
+    compare_at_price: null,
+    image_url: "/huiles/musc-yara-s-5ml-1000.jpeg",
+  },
+  {
+    name: "Musc Gardenia - Musc 5ml",
+    description: "Musc Gardenia 5ml, une senteur florale et chaude pour celles et ceux qui aiment les muscs doux et présents.",
+    price: 1000,
+    compare_at_price: null,
+    image_url: "/huiles/musc-gardenia-5ml-1000.jpeg",
+  },
+  {
+    name: "Musc Rouge - Musc 3ml",
+    description: "Musc Rouge 3ml, petit format accessible pour découvrir une senteur propre, douce et marquée.",
+    price: 700,
+    compare_at_price: null,
+    image_url: "/huiles/musc-rouge-3ml-700.jpg",
+  },
+  {
+    name: "Musc Tahara - Musc 3ml",
+    description: "Musc Tahara 3ml, une senteur propre, douce et très appréciée pour un parfumage discret.",
+    price: 700,
+    compare_at_price: null,
+    image_url: "/huiles/musc-tahara-3ml-700.jpg",
+  },
+  {
+    name: "Musc Vanille - Musc 3ml",
+    description: "Musc Vanille 3ml, gourmand, doux et facile à porter au quotidien.",
+    price: 700,
+    compare_at_price: null,
+    image_url: "/huiles/musc-vanille-3ml-700.jpg",
+  },
+];
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -292,6 +403,16 @@ export const starterCatalog: StarterCatalogProduct[] = [
     ...brume,
     category: "brume" as const,
     stock: 20,
+  })),
+  ...brumes100ml.map((brume) => ({
+    ...brume,
+    category: "brume" as const,
+    stock: 20,
+  })),
+  ...photographedOilProducts.map((product) => ({
+    ...product,
+    category: "huile" as const,
+    stock: 25,
   })),
   ...perfumes4000.map((perfume) => ({
     ...perfume,

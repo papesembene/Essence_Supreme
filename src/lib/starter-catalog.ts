@@ -35,11 +35,15 @@ const deprecatedMuskScents = [
 ];
 
 export const deprecatedStarterProductNames = [
-  ...deprecatedOilScents.flatMap((scent) => [
-    `${scent} - Huile 3ml`,
-    `${scent} - Huile 5ml`,
-    `${scent} - Extrait de Parfum 20ml`,
-  ]),
+  ...deprecatedOilScents.flatMap((scent) => {
+    const names = [`${scent} - Huile 3ml`, `${scent} - Huile 5ml`];
+
+    if (!["Kayali 81", "Scandale"].includes(scent)) {
+      names.push(`${scent} - Extrait de Parfum 20ml`);
+    }
+
+    return names;
+  }),
   ...deprecatedMuskScents.flatMap((scent) => [
     `${scent} - Musc 3ml`,
     `${scent} - Musc 5ml`,
@@ -253,28 +257,31 @@ const brumes100ml: CatalogItem[] = [
   },
 ];
 
-const photographedOilProducts: CatalogItem[] = [
+const photographedExtractProducts: CatalogItem[] = [
   {
     name: "Kayali 81 - Extrait de Parfum 20ml",
     description: "Extrait de parfum 20ml Kayali 81, doux, élégant et très féminin, pratique pour garder une belle senteur dans son sac.",
     price: 2500,
     compare_at_price: 3000,
-    image_url: "/huiles/extrait-20ml-kayali-81-2500.jpeg",
+    image_url: "/parfums/extrait-20ml-kayali-81-2500.jpeg",
   },
   {
     name: "Hugo Boss - Extrait de Parfum 20ml",
     description: "Extrait de parfum 20ml inspiré Hugo Boss, propre, chic et facile à porter au quotidien comme en sortie.",
     price: 2500,
     compare_at_price: 3000,
-    image_url: "/huiles/extrait-20ml-hugo-boss-2500.jpeg",
+    image_url: "/parfums/extrait-20ml-hugo-boss-2500.jpeg",
   },
   {
     name: "Scandale - Extrait de Parfum 20ml",
     description: "Extrait de parfum 20ml Scandale, une senteur sensuelle et gourmande avec une belle présence.",
     price: 2500,
     compare_at_price: 3000,
-    image_url: "/huiles/extrait-20ml-scandale-2500.jpeg",
+    image_url: "/parfums/extrait-20ml-scandale-2500.jpeg",
   },
+];
+
+const photographedOilProducts: CatalogItem[] = [
   {
     name: "Hypnotic - Huile 3ml",
     description: "Huile de parfum 3ml Hypnotic, petit format pratique pour découvrir la senteur ou l'emporter partout.",
@@ -369,6 +376,11 @@ export const starterCatalog: StarterCatalogProduct[] = [
     ...product,
     category: "huile" as const,
     stock: 25,
+  })),
+  ...photographedExtractProducts.map((product) => ({
+    ...product,
+    category: "parfum" as const,
+    stock: 20,
   })),
   ...perfumes4000.map((perfume) => ({
     ...perfume,

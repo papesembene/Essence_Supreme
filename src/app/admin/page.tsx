@@ -4,7 +4,10 @@ import { useMemo, useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { Trash2, Plus, Loader2, PackagePlus } from "lucide-react";
 import { discountPercent, formatPrice } from "@/lib/pricing";
-import { starterCatalog } from "@/lib/starter-catalog";
+import {
+  deprecatedStarterProductNames,
+  starterCatalog
+} from "@/lib/starter-catalog";
 
 const PRIMARY_ADMIN_EMAIL = "sembenpape4@gmail.com";
 const ADMIN_PRODUCTS_PAGE_SIZE = 12;
@@ -391,6 +394,18 @@ export default function AdminPage() {
       const excludedNames = new Set(
         (excludedProducts || []).map((product) => product.product_name)
       );
+      let legacyDeleteQuery = supabase
+        .from("products")
+        .delete()
+        .in("name", deprecatedStarterProductNames);
+
+      if (!isPrimaryAdmin) {
+        legacyDeleteQuery = legacyDeleteQuery.eq("admin_id", session.user.id);
+      }
+
+      const { error: legacyDeleteError } = await legacyDeleteQuery;
+      if (legacyDeleteError) throw legacyDeleteError;
+
       const existingByName = new Map(products.map((product) => [product.name, product]));
       const sellerData = {
         admin_id: session.user.id,

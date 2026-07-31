@@ -12,7 +12,7 @@ export interface StarterCatalogProduct {
 
 type CatalogItem = Omit<StarterCatalogProduct, "category" | "stock">;
 
-const oilScents = [
+const deprecatedOilScents = [
   "Kayali 81",
   "Yara Rose",
   "Mélange",
@@ -26,7 +26,7 @@ const oilScents = [
   "Hypnose",
 ];
 
-const muskScents = [
+const deprecatedMuskScents = [
   "Pomme Grenadine",
   "Khamrah",
   "Musk Rouge",
@@ -34,34 +34,16 @@ const muskScents = [
   "Musk Lavander",
 ];
 
-const scentDescriptions: Record<string, string> = {
-  "Kayali 81": "Une huile de parfum douce et raffinée, entre chaleur orientale, vanille élégante et sillage féminin moderne.",
-  "Yara Rose": "Une senteur rose, crémeuse et délicate, idéale pour un parfumage tendre, frais et très féminin.",
-  "Mélange": "Un accord signature équilibré, pensé pour celles et ceux qui aiment un parfum présent sans être lourd.",
-  "Baccarat Rouge": "Une huile lumineuse et sophistiquée aux accents ambrés, sucrés et boisés, avec un sillage remarquable.",
-  Scandale: "Une senteur sensuelle et gourmande, généreuse, parfaite pour les sorties et les moments marquants.",
-  "Bleu de Chanel": "Une inspiration fraîche, boisée et élégante, au caractère masculin propre et affirmé.",
-  "Sauvage Dior": "Une huile fraîche et intense, avec une impression propre, épicée et très présente.",
-  "Azzaro Chrome": "Une senteur fraîche, aquatique et propre, idéale pour la journée et le climat chaud.",
-  "Kim K": "Une huile florale douce et glamour, féminine, moderne et facile à porter.",
-  "Sokhna Diarra": "Une senteur douce, chaleureuse et enveloppante, appréciée pour son côté propre et distingué.",
-  Hypnose: "Une huile élégante et mystérieuse, avec une douceur séduisante et un sillage confortable.",
-  "Pomme Grenadine": "Un musc fruité, doux et joyeux, entre pomme sucrée et grenadine légère.",
-  Khamrah: "Un musc ambré et gourmand, chaleureux, épicé et très enveloppant.",
-  "Musk Rouge": "Un musc intense et élégant, doux mais marqué, avec une signature propre et sensuelle.",
-  "Musk Rose": "Un musc floral tendre, propre et féminin, porté par une rose douce et délicate.",
-  "Musk Lavander": "Un musc frais et apaisant, avec une touche lavande propre et confortable.",
-};
-
-const oilFormats = [
-  { label: "Huile 3ml", price: 700, compare_at_price: null, stock: 30 },
-  { label: "Huile 5ml", price: 1000, compare_at_price: null, stock: 30 },
-  { label: "Extrait de Parfum 20ml", price: 2500, compare_at_price: 3000, stock: 20 },
-];
-
-const muskFormats = [
-  { label: "Musc 3ml", price: 700, compare_at_price: null, stock: 30 },
-  { label: "Musc 5ml", price: 1000, compare_at_price: null, stock: 30 },
+export const deprecatedStarterProductNames = [
+  ...deprecatedOilScents.flatMap((scent) => [
+    `${scent} - Huile 3ml`,
+    `${scent} - Huile 5ml`,
+    `${scent} - Extrait de Parfum 20ml`,
+  ]),
+  ...deprecatedMuskScents.flatMap((scent) => [
+    `${scent} - Musc 3ml`,
+    `${scent} - Musc 5ml`,
+  ]),
 ];
 
 const deodorants: CatalogItem[] = [
@@ -358,61 +340,7 @@ const photographedOilProducts: CatalogItem[] = [
   },
 ];
 
-function oilImageForFormat(scent: string, format: string) {
-  if (format.includes("20ml")) {
-    if (scent === "Kayali 81") return "/huiles/extrait-20ml-kayali-81-2500.jpeg";
-    if (scent === "Scandale") return "/huiles/extrait-20ml-scandale-2500.jpeg";
-    return "/huiles/extrait-20ml-hugo-boss-2500.jpeg";
-  }
-
-  if (format.includes("5ml")) {
-    if (scent === "Kim K") return "/huiles/kim-k-huile-5ml-1000.jpeg";
-    return "/huiles/musc-yara-s-5ml-1000.jpeg";
-  }
-
-  if (scent === "Hypnose") return "/huiles/hypnotic-huile-3ml-700.jpeg";
-  return "/huiles/poussiere-dor-huile-3ml-700.jpeg";
-}
-
-function muskImageForFormat(scent: string, format: string) {
-  if (format.includes("5ml")) {
-    if (scent === "Musk Rouge") return "/huiles/musc-rouge-5ml-1000.jpeg";
-    if (scent === "Musk Rose") return "/huiles/musc-yara-s-5ml-1000.jpeg";
-    return "/huiles/musc-gardenia-5ml-1000.jpeg";
-  }
-
-  if (scent === "Musk Rouge") return "/huiles/musc-rouge-3ml-700.jpg";
-  if (scent === "Khamrah") return "/huiles/musc-tahara-3ml-700.jpg";
-  return "/huiles/musc-vanille-3ml-700.jpg";
-}
-
-function productDescription(scent: string, format: string) {
-  return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
-}
-
 export const starterCatalog: StarterCatalogProduct[] = [
-  ...oilScents.flatMap((scent) =>
-    oilFormats.map((format) => ({
-      name: `${scent} - ${format.label}`,
-      description: productDescription(scent, format.label),
-      price: format.price,
-      compare_at_price: format.compare_at_price,
-      image_url: oilImageForFormat(scent, format.label),
-      category: "huile" as const,
-      stock: format.stock,
-    }))
-  ),
-  ...muskScents.flatMap((scent) =>
-    muskFormats.map((format) => ({
-      name: `${scent} - ${format.label}`,
-      description: productDescription(scent, format.label),
-      price: format.price,
-      compare_at_price: format.compare_at_price,
-      image_url: muskImageForFormat(scent, format.label),
-      category: "huile" as const,
-      stock: format.stock,
-    }))
-  ),
   {
     name: "Brume Parfumée - 100ml",
     description: "Une brume légère pour le corps et les vêtements, parfaite pour se rafraîchir dans la journée avec une touche parfumée élégante.",

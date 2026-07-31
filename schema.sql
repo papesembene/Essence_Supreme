@@ -88,11 +88,18 @@ CREATE POLICY "Public can view products" ON public.products
   FOR SELECT
   USING (true);
 
--- Chaque admin peut créer, modifier et supprimer seulement ses propres produits
+-- Chaque admin peut gérer ses produits. L'admin principal peut aussi corriger
+-- les anciens produits importés ou sans propriétaire.
 CREATE POLICY "Admins can manage products" ON public.products
   FOR ALL
-  USING (auth.uid() = admin_id)
-  WITH CHECK (auth.uid() = admin_id);
+  USING (
+    auth.uid() = admin_id
+    OR lower(auth.jwt() ->> 'email') = 'sembenpape4@gmail.com'
+  )
+  WITH CHECK (
+    auth.uid() = admin_id
+    OR lower(auth.jwt() ->> 'email') = 'sembenpape4@gmail.com'
+  );
 
 CREATE POLICY "Customers can create orders" ON public.orders
   FOR INSERT
@@ -100,8 +107,14 @@ CREATE POLICY "Customers can create orders" ON public.orders
 
 CREATE POLICY "Admins can manage own orders" ON public.orders
   FOR ALL
-  USING (auth.uid() = admin_id)
-  WITH CHECK (auth.uid() = admin_id);
+  USING (
+    auth.uid() = admin_id
+    OR lower(auth.jwt() ->> 'email') = 'sembenpape4@gmail.com'
+  )
+  WITH CHECK (
+    auth.uid() = admin_id
+    OR lower(auth.jwt() ->> 'email') = 'sembenpape4@gmail.com'
+  );
 
 CREATE POLICY "Admins can manage own catalog exclusions" ON public.catalog_import_exclusions
   FOR ALL

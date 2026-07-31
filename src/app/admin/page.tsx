@@ -419,7 +419,18 @@ export default function AdminPage() {
       const { error: legacyDeleteError } = await legacyDeleteQuery;
       if (legacyDeleteError) throw legacyDeleteError;
 
-      const existingByName = new Map(products.map((product) => [product.name, product]));
+      let existingQuery = supabase.from("products").select("*");
+
+      if (!isPrimaryAdmin) {
+        existingQuery = existingQuery.eq("admin_id", session.user.id);
+      }
+
+      const { data: freshProducts, error: freshProductsError } = await existingQuery;
+      if (freshProductsError) throw freshProductsError;
+
+      const existingByName = new Map(
+        (freshProducts || []).map((product) => [product.name, product])
+      );
       const sellerData = {
         admin_id: session.user.id,
         seller_name: adminName || session.user.email || "Vendeur",

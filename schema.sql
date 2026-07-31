@@ -45,6 +45,13 @@ CREATE TABLE IF NOT EXISTS public.orders (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS public.catalog_import_exclusions (
+  admin_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_name text NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  PRIMARY KEY (admin_id, product_name)
+);
+
 -- Migration si la table existait déjà
 ALTER TABLE public.products
   ADD COLUMN IF NOT EXISTS admin_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -57,6 +64,7 @@ ALTER TABLE public.products
 ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.catalog_import_exclusions ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins can view own profile" ON public.admin_profiles;
 DROP POLICY IF EXISTS "Admins can manage own profile" ON public.admin_profiles;
@@ -64,6 +72,7 @@ DROP POLICY IF EXISTS "Public can view products" ON public.products;
 DROP POLICY IF EXISTS "Admins can manage products" ON public.products;
 DROP POLICY IF EXISTS "Customers can create orders" ON public.orders;
 DROP POLICY IF EXISTS "Admins can manage own orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can manage own catalog exclusions" ON public.catalog_import_exclusions;
 
 CREATE POLICY "Admins can view own profile" ON public.admin_profiles
   FOR SELECT
@@ -90,6 +99,11 @@ CREATE POLICY "Customers can create orders" ON public.orders
   WITH CHECK (true);
 
 CREATE POLICY "Admins can manage own orders" ON public.orders
+  FOR ALL
+  USING (auth.uid() = admin_id)
+  WITH CHECK (auth.uid() = admin_id);
+
+CREATE POLICY "Admins can manage own catalog exclusions" ON public.catalog_import_exclusions
   FOR ALL
   USING (auth.uid() = admin_id)
   WITH CHECK (auth.uid() = admin_id);

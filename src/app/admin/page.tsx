@@ -8,6 +8,11 @@ import { starterCatalog } from "@/lib/starter-catalog";
 
 const PRIMARY_ADMIN_EMAIL = "sembenpape4@gmail.com";
 const ADMIN_PRODUCTS_PAGE_SIZE = 12;
+const starterCatalogNames = new Set(starterCatalog.map((product) => product.name));
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Une erreur est survenue.";
+}
 
 export default function AdminPage() {
   const [email, setEmail] = useState("");
@@ -309,10 +314,32 @@ export default function AdminPage() {
   const handleDelete = async (id: string) => {
     if (!supabase || !confirm("Êtes-vous sûr de vouloir supprimer ce produit (Ceci est irréversible) ?")) return;
     setActionLoading(true);
-    const { error } = await supabase.from('products').delete().eq('id', id);
-    if (error) alert(error.message);
-    else fetchProducts(session.user.id, session.user.email);
-    setActionLoading(false);
+    try {
+      const productToDelete = products.find((product) => product.id === id);
+
+      if (productToDelete && starterCatalogNames.has(productToDelete.name)) {
+        const { error: exclusionError } = await supabase
+          .from("catalog_import_exclusions")
+          .upsert({
+            admin_id: session.user.id,
+            product_name: productToDelete.name,
+          });
+
+        if (exclusionError) {
+          throw new Error(
+            "Impossible de mémoriser cette suppression. Ajoutez la table catalog_import_exclusions avec le script schema.sql dans Supabase, puis réessayez."
+          );
+        }
+      }
+
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      fetchProducts(session.user.id, session.user.email);
+    } catch (err) {
+      alert(getErrorMessage(err));
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleToggleFeatured = async (product: any) => {
@@ -350,6 +377,20 @@ export default function AdminPage() {
 
     setImportLoading(true);
     try {
+      const { data: excludedProducts, error: excludedProductsError } = await supabase
+        .from("catalog_import_exclusions")
+        .select("product_name")
+        .eq("admin_id", session.user.id);
+
+      if (excludedProductsError) {
+        throw new Error(
+          "Impossible de lire les produits supprimés. Ajoutez la table catalog_import_exclusions avec le script schema.sql dans Supabase, puis réessayez."
+        );
+      }
+
+      const excludedNames = new Set(
+        (excludedProducts || []).map((product) => product.product_name)
+      );
       const existingByName = new Map(products.map((product) => [product.name, product]));
       const sellerData = {
         admin_id: session.user.id,
@@ -360,6 +401,10 @@ export default function AdminPage() {
       const productsToUpdate = [];
 
       for (const product of starterCatalog) {
+        if (excludedNames.has(product.name)) {
+          continue;
+        }
+
         const payload = {
           ...product,
           ...sellerData,
@@ -391,7 +436,7 @@ export default function AdminPage() {
         if (error) throw error;
       }
 
-      alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour.`);
+      alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour, ${excludedNames.size} suppression(s) conservée(s).`);
       fetchProducts(session.user.id, session.user.email);
     } catch (err: any) {
       if (err.message?.includes("product_category")) {

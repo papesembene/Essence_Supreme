@@ -358,6 +358,34 @@ const photographedOilProducts: CatalogItem[] = [
   },
 ];
 
+function oilImageForFormat(scent: string, format: string) {
+  if (format.includes("20ml")) {
+    if (scent === "Kayali 81") return "/huiles/extrait-20ml-kayali-81-2500.jpeg";
+    if (scent === "Scandale") return "/huiles/extrait-20ml-scandale-2500.jpeg";
+    return "/huiles/extrait-20ml-hugo-boss-2500.jpeg";
+  }
+
+  if (format.includes("5ml")) {
+    if (scent === "Kim K") return "/huiles/kim-k-huile-5ml-1000.jpeg";
+    return "/huiles/musc-yara-s-5ml-1000.jpeg";
+  }
+
+  if (scent === "Hypnose") return "/huiles/hypnotic-huile-3ml-700.jpeg";
+  return "/huiles/poussiere-dor-huile-3ml-700.jpeg";
+}
+
+function muskImageForFormat(scent: string, format: string) {
+  if (format.includes("5ml")) {
+    if (scent === "Musk Rouge") return "/huiles/musc-rouge-5ml-1000.jpeg";
+    if (scent === "Musk Rose") return "/huiles/musc-yara-s-5ml-1000.jpeg";
+    return "/huiles/musc-gardenia-5ml-1000.jpeg";
+  }
+
+  if (scent === "Musk Rouge") return "/huiles/musc-rouge-3ml-700.jpg";
+  if (scent === "Khamrah") return "/huiles/musc-tahara-3ml-700.jpg";
+  return "/huiles/musc-vanille-3ml-700.jpg";
+}
+
 function productDescription(scent: string, format: string) {
   return `${scentDescriptions[scent]} Format ${format}, pratique pour découvrir, offrir ou garder dans son sac au quotidien.`;
 }
@@ -369,7 +397,7 @@ export const starterCatalog: StarterCatalogProduct[] = [
       description: productDescription(scent, format.label),
       price: format.price,
       compare_at_price: format.compare_at_price,
-      image_url: "/images/products/huiles-rollon-premium.png",
+      image_url: oilImageForFormat(scent, format.label),
       category: "huile" as const,
       stock: format.stock,
     }))
@@ -380,7 +408,7 @@ export const starterCatalog: StarterCatalogProduct[] = [
       description: productDescription(scent, format.label),
       price: format.price,
       compare_at_price: format.compare_at_price,
-      image_url: "/images/products/huiles-rollon-premium.png",
+      image_url: muskImageForFormat(scent, format.label),
       category: "huile" as const,
       stock: format.stock,
     }))

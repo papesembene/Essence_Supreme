@@ -27,7 +27,20 @@ const testimonials = [
   }
 ];
 
-export function HomeContent({ featuredProducts }: { featuredProducts: Product[] }) {
+type CategoryImages = {
+  parfum: string;
+  huile: string;
+  deodorant: string;
+  brume: string;
+};
+
+export function HomeContent({
+  featuredProducts,
+  categoryImages,
+}: {
+  featuredProducts: Product[];
+  categoryImages: CategoryImages;
+}) {
   return (
     <div className="w-full">
       <section className="relative flex h-[82vh] min-h-[620px] w-full items-center justify-center overflow-hidden">
@@ -124,7 +137,7 @@ export function HomeContent({ featuredProducts }: { featuredProducts: Product[] 
       <section className="border-y border-white/5 bg-[#08080C] py-20">
         <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Link href="/products?category=parfum" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px]">
-            <Image src="/parfums/parfum-4000-1.jpeg" alt="Parfums" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src={categoryImages.parfum} alt="Parfums" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">PARFUMS</h3>
@@ -132,7 +145,7 @@ export function HomeContent({ featuredProducts }: { featuredProducts: Product[] 
             </div>
           </Link>
           <Link href="/products?category=huile" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px] lg:-translate-y-8">
-            <Image src="/huiles/kim-k-huile-5ml-1000.jpeg" alt="Huiles" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src={categoryImages.huile} alt="Huiles" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">HUILES</h3>
@@ -140,7 +153,7 @@ export function HomeContent({ featuredProducts }: { featuredProducts: Product[] 
             </div>
           </Link>
           <Link href="/products?category=deodorant" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px] lg:translate-y-8">
-            <Image src="/deo/deo-1.jpeg" alt="Déodorants" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src={categoryImages.deodorant} alt="Déodorants" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">DÉODORANTS</h3>
@@ -148,7 +161,7 @@ export function HomeContent({ featuredProducts }: { featuredProducts: Product[] 
             </div>
           </Link>
           <Link href="/products?category=brume" className="group relative flex h-[320px] items-center justify-center overflow-hidden bg-[#0d0d14] md:h-[360px]">
-            <Image src="/brumes/brume-vv-love-1.jpeg" alt="Brumes" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
+            <Image src={categoryImages.brume} alt="Brumes" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-500" />
             <div className="relative z-10 text-center">
               <h3 className="font-serif text-3xl tracking-widest mb-4">BRUMES</h3>

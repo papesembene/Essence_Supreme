@@ -188,6 +188,79 @@ const promoPerfumes: CatalogItem[] = [
   },
 ];
 
+const kayAliPerfumes: CatalogItem[] = [
+  {
+    name: "Kay Ali - Vanilla Candy Rock Sugar 42",
+    description: "Parfum Kay Ali Vanilla Candy Rock Sugar 42, gourmand, doux et sucré, idéal pour celles et ceux qui aiment les senteurs féminines et attirantes. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-vanilla-candy-rock-sugar-42-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Maldives in a Bottle",
+    description: "Parfum Kay Ali Maldives in a Bottle, frais, lumineux et tropical, parfait pour une senteur propre et élégante au quotidien. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-maldives-in-a-bottle-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Eden Sparkling Lychee",
+    description: "Parfum Kay Ali Eden Sparkling Lychee, fruité, pétillant et féminin, avec une présence douce qui attire sans être lourde. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-eden-sparkling-lychee-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Vanilla 28",
+    description: "Parfum Kay Ali Vanilla 28, vanillé, chaud et élégant, une valeur sûre pour une senteur chic et durable. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-vanilla-28-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Utopia Vanilla Coco 21",
+    description: "Parfum Kay Ali Utopia Vanilla Coco 21, crémeux, doux et solaire, avec une touche coco vanillée très agréable. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-utopia-vanilla-coco-21-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Invite Only Amber",
+    description: "Parfum Kay Ali Invite Only Amber, ambré, intense et raffiné, parfait pour les sorties et les amateurs de senteurs marquées. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-invite-only-amber-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Eden Juicy Apple 01",
+    description: "Parfum Kay Ali Eden Juicy Apple 01, fruité, frais et moderne, une senteur énergique qui se porte facilement. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-eden-juicy-apple-01-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Fleur Majesty Rose Royale 31",
+    description: "Parfum Kay Ali Fleur Majesty Rose Royale 31, floral, féminin et élégant, avec une rose douce et très raffinée. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-fleur-majesty-rose-royale-31-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Yum Pistachio Gelato 33",
+    description: "Parfum Kay Ali Yum Pistachio Gelato 33, gourmand, crémeux et original, parfait pour une senteur douce qui se remarque. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-yum-pistachio-gelato-33-3000.jpeg",
+  },
+  {
+    name: "Kay Ali - Oudgasm Spiced Oud 01",
+    description: "Parfum Kay Ali Oudgasm Spiced Oud 01, oud épicé, profond et chic, pour une senteur plus luxueuse et affirmée. Avec le code AOUT26, il revient à 3000 FCFA.",
+    price: 3080,
+    compare_at_price: 3500,
+    image_url: "/parfums/kayali-oudgasm-spiced-oud-01-3000.jpeg",
+  },
+];
+
 const vvLoveBrumeStyles = [
   "Cherry Love",
   "Vanilla Glow",
@@ -383,6 +456,11 @@ export const starterCatalog: StarterCatalogProduct[] = [
   })),
   ...photographedExtractProducts.map((product) => ({
     ...product,
+    category: "parfum" as const,
+    stock: 20,
+  })),
+  ...kayAliPerfumes.map((perfume) => ({
+    ...perfume,
     category: "parfum" as const,
     stock: 20,
   })),

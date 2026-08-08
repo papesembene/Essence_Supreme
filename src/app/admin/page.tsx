@@ -4,11 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { Trash2, Plus, Loader2, PackagePlus } from "lucide-react";
 import { discountPercent, formatPrice } from "@/lib/pricing";
-import {
-  deprecatedStarterProductNames,
-  requiredExtractProductNames,
-  starterCatalog
-} from "@/lib/starter-catalog";
+import { starterCatalog } from "@/lib/starter-catalog";
 
 const PRIMARY_ADMIN_EMAIL = "sembenpape4@gmail.com";
 const ADMIN_PRODUCTS_PAGE_SIZE = 12;
@@ -377,22 +373,10 @@ export default function AdminPage() {
   const handleImportStarterCatalog = async () => {
     if (!supabase) return;
     if (!adminWhatsapp) return alert("Enregistrez d'abord le WhatsApp de cet admin.");
-    if (!confirm(`Synchroniser ${starterCatalog.length} produits du catalogue de départ ? Les produits existants avec le même nom seront mis à jour.`)) return;
+    if (!confirm(`Ajouter les nouveaux produits du catalogue de départ ? Les produits déjà présents ne seront pas modifiés.`)) return;
 
     setImportLoading(true);
     try {
-      const { error: extractExclusionError } = await supabase
-        .from("catalog_import_exclusions")
-        .delete()
-        .eq("admin_id", session.user.id)
-        .in("product_name", requiredExtractProductNames);
-
-      if (extractExclusionError) {
-        throw new Error(
-          "Impossible de réactiver les extraits. Vérifiez la table catalog_import_exclusions dans Supabase, puis réessayez."
-        );
-      }
-
       const { data: excludedProducts, error: excludedProductsError } = await supabase
         .from("catalog_import_exclusions")
         .select("product_name")
@@ -407,18 +391,6 @@ export default function AdminPage() {
       const excludedNames = new Set(
         (excludedProducts || []).map((product) => product.product_name)
       );
-      let legacyDeleteQuery = supabase
-        .from("products")
-        .delete()
-        .in("name", deprecatedStarterProductNames);
-
-      if (!isPrimaryAdmin) {
-        legacyDeleteQuery = legacyDeleteQuery.eq("admin_id", session.user.id);
-      }
-
-      const { error: legacyDeleteError } = await legacyDeleteQuery;
-      if (legacyDeleteError) throw legacyDeleteError;
-
       let existingQuery = supabase.from("products").select("*");
 
       if (!isPrimaryAdmin) {
@@ -437,7 +409,6 @@ export default function AdminPage() {
         seller_whatsapp: adminWhatsapp.replace(/[^\d]/g, ""),
       };
       const productsToImport = [];
-      const productsToUpdate = [];
 
       for (const product of starterCatalog) {
         if (excludedNames.has(product.name)) {
@@ -450,15 +421,13 @@ export default function AdminPage() {
         };
         const existingProduct = existingByName.get(product.name);
 
-        if (existingProduct) {
-          productsToUpdate.push({ id: existingProduct.id, payload });
-        } else {
+        if (!existingProduct) {
           productsToImport.push(payload);
         }
       }
 
-      if (productsToImport.length === 0 && productsToUpdate.length === 0) {
-        alert("Aucun produit à synchroniser.");
+      if (productsToImport.length === 0) {
+        alert("Aucun nouveau produit à ajouter.");
         return;
       }
 
@@ -467,15 +436,7 @@ export default function AdminPage() {
         if (error) throw error;
       }
 
-      for (const product of productsToUpdate) {
-        const { error } = await supabase
-          .from("products")
-          .update(product.payload)
-          .eq("id", product.id);
-        if (error) throw error;
-      }
-
-      alert(`${productsToImport.length} produits ajoutés, ${productsToUpdate.length} produits mis à jour, ${excludedNames.size} suppression(s) conservée(s).`);
+      alert(`${productsToImport.length} nouveau(x) produit(s) ajouté(s). Aucun produit existant n'a été modifié.`);
       fetchProducts(session.user.id, session.user.email);
     } catch (err: any) {
       if (err.message?.includes("product_category")) {

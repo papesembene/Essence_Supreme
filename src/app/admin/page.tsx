@@ -28,6 +28,9 @@ export default function AdminPage() {
   const [importLoading, setImportLoading] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState("");
+  const [uploadedImages, setUploadedImages] = useState<
+    { name: string; url: string; created_at?: string }[]
+  >([]);
   const [productsPage, setProductsPage] = useState(1);
   const [productSearch, setProductSearch] = useState("");
 
@@ -87,6 +90,7 @@ export default function AdminPage() {
           fetchProfile(session.user.id, session.user.email, session.user.user_metadata);
           fetchProducts(session.user.id, session.user.email);
           fetchOrders(session.user.id, session.user.email);
+          fetchUploadedImages();
         }
         else setLoading(false);
       });
@@ -97,6 +101,7 @@ export default function AdminPage() {
           fetchProfile(session.user.id, session.user.email, session.user.user_metadata);
           fetchProducts(session.user.id, session.user.email);
           fetchOrders(session.user.id, session.user.email);
+          fetchUploadedImages();
         }
       });
 
@@ -125,6 +130,32 @@ export default function AdminPage() {
       setProductsPage(1);
     }
     setLoading(false);
+  };
+
+  const fetchUploadedImages = async () => {
+    if (!supabase) return;
+    const { data, error } = await supabase.storage
+      .from("product-images")
+      .list("", {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" },
+      });
+
+    if (error) return;
+
+    setUploadedImages(
+      (data || []).map((file) => {
+        const { data: publicUrl } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(file.name);
+
+        return {
+          name: file.name,
+          url: publicUrl.publicUrl,
+          created_at: file.created_at,
+        };
+      })
+    );
   };
 
   const fetchOrders = async (adminId?: string, adminEmail?: string) => {
@@ -481,10 +512,12 @@ export default function AdminPage() {
 
   const openAddForm = () => {
     resetForm();
+    fetchUploadedImages();
     setIsAddingMode(true);
   };
 
   const openEditForm = (product: any) => {
+    fetchUploadedImages();
     setEditingProductId(product.id);
     setExistingImageUrl(product.image_url || "");
     setName(product.name || "");
@@ -621,6 +654,56 @@ export default function AdminPage() {
               <label className="block text-xs uppercase tracking-widest text-muted mb-2">Photo du produit (Bucket Supabase requis)</label>
               <input type="file" accept="image/*" onChange={e => setImageFile(e.target.files?.[0] || null)} className="w-full text-sm text-muted file:bg-accent file:text-primary file:border-0 file:px-4 file:py-2 file:mr-4 file:hover:bg-white file:transition-colors file:cursor-pointer" />
             </div>
+
+            {existingImageUrl && (
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-muted mb-2">Image sélectionnée</label>
+                <div className="flex items-center gap-4 border border-white/10 bg-primary p-3">
+                  <img src={existingImageUrl} alt="Image sélectionnée" className="h-20 w-16 object-cover border border-white/10" />
+                  <p className="min-w-0 break-all text-xs text-muted">{existingImageUrl}</p>
+                </div>
+              </div>
+            )}
+
+            {uploadedImages.length > 0 && (
+              <div>
+                <div className="mb-3 flex items-center justify-between gap-4">
+                  <label className="block text-xs uppercase tracking-widest text-muted">Anciennes images uploadées</label>
+                  <button
+                    type="button"
+                    onClick={fetchUploadedImages}
+                    className="text-xs uppercase tracking-widest text-accent hover:text-white transition-colors"
+                  >
+                    Actualiser
+                  </button>
+                </div>
+                <div className="grid max-h-80 grid-cols-3 gap-3 overflow-y-auto border border-white/10 bg-primary p-3 sm:grid-cols-4">
+                  {uploadedImages.map((image) => (
+                    <button
+                      key={image.name}
+                      type="button"
+                      onClick={() => {
+                        setExistingImageUrl(image.url);
+                        setImageFile(null);
+                      }}
+                      className={`group relative aspect-[3/4] overflow-hidden border transition-colors ${
+                        existingImageUrl === image.url
+                          ? "border-accent"
+                          : "border-white/10 hover:border-accent"
+                      }`}
+                      title={image.name}
+                    >
+                      <img src={image.url} alt={image.name} className="h-full w-full object-cover" />
+                      {existingImageUrl === image.url && (
+                        <span className="absolute inset-x-0 bottom-0 bg-accent px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                          Choisie
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button type="submit" disabled={actionLoading} className="flex-1 bg-accent text-primary px-4 py-3 uppercase tracking-widest font-semibold hover:bg-white transition-colors disabled:opacity-50 flex justify-center items-center">
